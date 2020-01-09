@@ -66,7 +66,11 @@ class App extends Component {
       loanPeriod,
       borrower,
       depositPercentage
-    ).send({from: accounts[0], value: amount});
+    ).send({
+      from: accounts[0],
+      value: amount,
+      gas: 650000
+    })
     console.log(createLoan)
   }
 
@@ -78,7 +82,17 @@ class App extends Component {
       .send({from: accounts[0], value: fullAmount}); 
   };
 
-  getLoan = async () => {
+  // Retrieve funds is for the BORROWER to call
+  // in order to retrieve the funds deposited by
+  // the lender
+  retrieveFunds = async () => {
+    let { loanId, contract, accounts } = this.state;
+    await contract.methods
+    .retrieveFunds(loanId)
+    .call({from: accounts[0]})
+  }
+
+  findLoan = async () => {
     let { loanId, contract, accounts } = this.state;
     let loan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
     console.log(loan);
@@ -117,7 +131,7 @@ class App extends Component {
 
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
-        <div><button onClick={this.getLoan}>Retrieve Loan</button></div>
+        <div><button onClick={this.findLoan}>Retrieve Loan</button></div>
         <br></br>
         <div><input
             name="loanId"
