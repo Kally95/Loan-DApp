@@ -15,7 +15,7 @@ class App extends Component {
     super(props)
 
     this.state = {
-      states: ['PENDING', 'ACTIVE', 'RESOLVED'],
+      status: ['PENDING', 'ACTIVE', 'RESOLVED'],
       web3: null,
       accounts: null,
       contract: null,
@@ -25,7 +25,7 @@ class App extends Component {
       depositPercentage : 0,
       loanId: 0,
       fullAmount: 0,
-      value: 0
+      amount: 0
     };
   }
 
@@ -59,29 +59,24 @@ class App extends Component {
     }
   };
 
-  // runExample = async () => {
-  //   const { accounts, contract } = this.state;
-
-  //   // Stores a given value, 5 by default.
-  //   //await contract.methods.set(5).send({ from: accounts[0] });
-
-  //   // Get the value from the contract to prove it worked.
-  //   //const response = await contract.methods.get().call();
-
-  //   // Update state with the result.
-  //   //this.setState({ storageValue: response });
-  // };
-
   createLoan = async () => {
-    let { accounts, contract,  interest, loanPeriod, borrower, depositPercentage, value} = this.state;
+    let { accounts, contract,  interest, loanPeriod, borrower, depositPercentage, amount} = this.state;
     let createLoan = await contract.methods.createLoan(
       interest,
       loanPeriod,
       borrower,
       depositPercentage
-    ).send({from: accounts[0], value});
+    ).send({from: accounts[0], value: amount});
     console.log(createLoan)
   }
+
+  payBackLoan = async () => {
+    let { loanId, contract, accounts, fullAmount } = this.state;
+    // const fullLoanAmount = web3.utils.toBN(fullAmount);
+    await contract.methods
+      .payBackLoan(loanId)
+      .send({from: accounts[0], value: fullAmount}); 
+  };
 
   getLoan = async () => {
     let { loanId, contract, accounts } = this.state;
@@ -110,13 +105,11 @@ class App extends Component {
 
   render() {
     //console.log(this.state);
-    let { totalSupply: supply } = this.state;
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
       <div className="App">
-        <h1>Good To Loan!</h1>
         <h2>Smart Contract Example</h2>
         <span>Account: {this.state.accounts[0]}</span>
         <br></br>
@@ -151,9 +144,6 @@ class App extends Component {
       {/* <br></br>
       <button onClick={this.handleInterest} >Interest</button> */}
 
-      <br></br>
-      <br></br>
-      <br></br>
       <br></br>
       <br></br>
 
@@ -209,20 +199,37 @@ class App extends Component {
         </div>
         <br></br>
         <div className="form-group">
-          <label htmlFor="value">Value of the Loan</label>
+          <label htmlFor="amount">Value of the Loan</label>
           <br></br>
           <input
-            name="value"
+            name="amount"
             className="form-control"
-            id="value"
+            id="amount"
             onChange={this.handleInput}
           />
            <br></br>
         </div>
       
         <br></br>
-        <button onClick={this.handleCreate}>Create</button>
+        {/* <button onClick={this.handleCreate}>Create</button> */}
+        <button 
+          onClick={e => this.createLoan()}
+          type="submit" 
+          className="btn btn-primary"
+          >
+          Submit
+          </button>
       </form>
+        <p>Full Amount: {this.state.fullAmount}</p>
+        <p>Deposit Paid: {this.state.depositPercentage}</p>
+        <p>Borrower: {this.state.borrower}</p>
+        <p>Lender: {this.state.accounts[0]}</p>
+        <p>Amount: {this.state.amount}</p>
+        <p>Interest: {this.state.interest} </p>
+        <p>Duration: {this.state.loanPeriod} </p>
+        {this.state > 0 ? (
+        <p>End: {(new Date(parseInt(this.end) * 1000)).toLocaleString()}</p>
+        ) : null}
       </div>
     );
   }
