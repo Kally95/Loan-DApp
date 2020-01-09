@@ -10,11 +10,12 @@ contract Loan is Stoppable {
     enum Status {
         PENDING,
         ACTIVE,
-        RESOLVED,
-        DEFAULT
+        RESOLVED
+        //DEFAULT
     }
     
     struct Loans {
+        uint fullAmount;
         uint amount;
         uint interest;
         uint ID;
@@ -31,6 +32,7 @@ contract Loan is Stoppable {
     event LogLoanCreation(address indexed _lender, uint indexed _loanId);
     event LogDeposit(address indexed _borrower, uint indexed _depositAmount);
     event LogRetrieved(uint indexed _loanID, address indexed _borrower, uint indexed _amountRetrieved);
+    event LogPaid(address indexed _borrower, uint indexed _loanID, uint indexed _paidBack);
     
     mapping(uint256 => Loans) public loans;
 
@@ -50,11 +52,14 @@ contract Loan is Stoppable {
     whenAlive
     returns(bool)
     {
+        require(msg.value > 0, "Loan must have an associated Value");
         emit LogLoanCreation(msg.sender, loanId);
         
-        uint256 x = msg.value.mul(_depositPercentage).div(100);
+        uint256 depositPercentage = msg.value.mul(_depositPercentage).div(100);
+        uint256 fullAmount = msg.value + _interest;
         
         loans[loanId] = Loans({
+            fullAmount: fullAmount,
             amount: msg.value,
             interest: _interest,
             ID: loanId,
@@ -62,29 +67,49 @@ contract Loan is Stoppable {
             lender: msg.sender,
             borrower: _borrower,
             status: Status.PENDING,
-            requiredDeposit: x
+            requiredDeposit: depositPercentage
         });
         
         loanId = loanId + 1;
         return true;
     }
     
-    function payDeposit(uint _loanId)
+    function payLoanDeposit(uint _loanId)
     external
     payable
     whenRunning
     whenAlive
-    {
+    {   require(loans[_loanId].status == Status.PENDING);
         require(msg.value == loans[_loanId].requiredDeposit, "You must deposit the right amount");
         require(msg.sender == loans[_loanId].borrower, "You must be the assigned borrower for this loan");
-        emit LogDeposit(msg.sender, msg.value);
         loans[_loanId].status = Status.ACTIVE;
-        address lender = loans[_loanId].lender;
-        (bool success, ) = lender.call.value(msg.value)("");
+        loans[_loanId].fullAmount -= loans[_loanId].requiredDeposit;
+        (bool success, ) = loans[_loanId].lender.call.value(msg.value)("");
         require(success, "Error: Transfer failed.");
+        emit LogDeposit(msg.sender, msg.value);
     }
     
-    function retrieveLoan(uint _loanId)
+    function payBackLoan(uint _loanId) 
+    public 
+    payable
+    whenRunning
+    whenAlive
+    {   require(loans[_loanId].status == Status.ACTIVE);
+        require(msg.sender == loans[_loanId].borrower, "You must be the assigned borrower for this loan");
+        require(msg.value == (loans[_loanId].fullAmount), "You must pay the full loan amount includinginterest");
+        require(loans[_loanId].status == Status.ACTIVE);
+        // if (now <= loans[_loanId].end) {
+        //     loans[_loanId].status = Status.DEFAULT;
+        // }
+        
+        loans[_loanId].status = Status.RESOLVED;
+        (bool success, ) = loans[_loanId].lender.call.value(msg.value)("");
+        require(success, "Error: Transfer failed.");
+        
+        emit LogPaid(msg.sender, _loanId, msg.value);
+    }
+
+    function retrieveLoanFunds(uint _loanId)
     public
     payable
     paidDeposit(_loanId)
@@ -92,10 +117,12 @@ contract Loan is Stoppable {
         require(msg.sender == loans[_loanId].borrower, "Requires the borrower of that loan");
         require(loans[_loanId].amount != 0, "There are no funds to retrieve");
         uint256 loanAmount = loans[_loanId].amount;
-        emit LogRetrieved(_loanId, msg.sender, loanAmount);
+       
         loans[_loanId].amount = 0;
         (bool success, ) = msg.sender.call.value(loanAmount)("");
         require(success, "Error: Transfer failed.");
+        
+        emit LogRetrieved(_loanId, msg.sender, loanAmount);
     }
     
     function retrieveLoans(uint _loanId)
@@ -104,6 +131,7 @@ contract Loan is Stoppable {
     whenRunning
     whenAlive
     returns(
+    uint fullAmount,
     uint amount,
     uint interest,
     uint loanPeriod,
@@ -112,13 +140,14 @@ contract Loan is Stoppable {
     uint status
     )
     {
+        fullAmount = loans[_loanId].fullAmount;
         amount = loans[_loanId].amount;
         interest = loans[_loanId].interest;
         loanPeriod = loans[_loanId].end;
         lender = loans[_loanId].lender;
         borrower = loans[_loanId].borrower;
         status = uint(loans[_loanId].status);
-        return (amount, interest, loanPeriod, lender, borrower, status);
+        return (fullAmount, amount, interest, loanPeriod, lender, borrower, status);
     }
 }
 
