@@ -89,6 +89,12 @@ contract Loan is Stoppable {
         emit LogDeposit(msg.sender, msg.value);
     }
     
+    // function isFinished() {
+    // const now = new Date().getTime();
+    // const loanEnd =  (new Date(parseInt(loan.end) * 1000)).getTime();
+    // return (loanEnd > now) ? false : true;
+    //}
+
     function payBackLoan(uint _loanId) 
     public 
     payable

@@ -13,7 +13,7 @@ import "./App.css";
 class App extends Component {
   constructor(props) {
     super(props)
-
+    this.createLoan = this.createLoan.bind(this);
     this.state = {
       status: ['PENDING', 'ACTIVE', 'RESOLVED'],
       web3: null,
@@ -25,7 +25,8 @@ class App extends Component {
       depositPercentage : 0,
       loanId: 0,
       fullAmount: 0,
-      amount: 0
+      amount: 0,
+      requiredDeposit: 0
     };
   }
 
@@ -60,8 +61,9 @@ class App extends Component {
   };
 
   createLoan = async () => {
+ 
     let { accounts, contract,  interest, loanPeriod, borrower, depositPercentage, amount} = this.state;
-    let createLoan = await contract.methods.createLoan(
+    await contract.methods.createLoan(
       interest,
       loanPeriod,
       borrower,
@@ -71,8 +73,16 @@ class App extends Component {
       value: amount,
       gas: 650000
     })
-    console.log(createLoan)
+    
   }
+
+  payLoanDeposit = async () => {
+    let { accounts, contract, requiredDeposit, loanId } = this.state;
+    await contract.methods
+    .payLoanDeposit(loanId)
+    .send({from: accounts[0], value: requiredDeposit})
+    // Get requiredDeposit from Struct in Loan contract
+  };
 
   payBackLoan = async () => {
     let { loanId, contract, accounts, fullAmount } = this.state;
@@ -81,7 +91,7 @@ class App extends Component {
       .payBackLoan(loanId)
       .send({from: accounts[0], value: fullAmount}); 
   };
-
+  
   // Retrieve funds is for the BORROWER to call
   // in order to retrieve the funds deposited by
   // the lender
@@ -90,26 +100,26 @@ class App extends Component {
     await contract.methods
     .retrieveFunds(loanId)
     .call({from: accounts[0]})
-  }
+  };
 
   findLoan = async () => {
     let { loanId, contract, accounts } = this.state;
     let loan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
     console.log(loan);
     this.setState({ loan });
-  }
+  };
 
   handleInput = (event) => {
     console.log(event.target.name)
     console.log(event.target.value)
     this.setState({ [event.target.name]: event.target.value });
-  }
+  };
 
   handleInterest = () => {
     const { accounts, contract } = this.state;
     const { interest } = this.state
     console.log(this.state.interest);
-  }
+  };
 
   // handleGetLoan = () => {
   //   const { accounts, contract } = this.state;
@@ -160,7 +170,7 @@ class App extends Component {
 
       <br></br>
       <br></br>
-
+      
       <form>
         <div className="form-group">
 
@@ -168,6 +178,7 @@ class App extends Component {
           <label htmlFor="interest">Interest Amount</label>
           <br></br>
           <input
+            autoComplete="off"
             name="interest"
             className="form-control"
             id="interest"
@@ -180,6 +191,7 @@ class App extends Component {
           <label htmlFor="loanPeriod">Loan Period</label>
           <br></br>
           <input
+            autoComplete="off"
             name="loanPeriod"
             className="form-control"
             id="loanPeriod"
@@ -192,6 +204,7 @@ class App extends Component {
           <label htmlFor="borrower">Borrower</label>
           <br></br>
           <input
+            autoComplete="off"
             name="borrower"
             className="form-control"
             id="borrower"
@@ -204,6 +217,7 @@ class App extends Component {
           <label htmlFor="depositPercentage">Deposit Percentage</label>
           <br></br>
           <input
+            autoComplete="off"
             name="depositPercentage"
             className="form-control"
             id="depositPercentage"
@@ -216,6 +230,7 @@ class App extends Component {
           <label htmlFor="amount">Value of the Loan</label>
           <br></br>
           <input
+            autoComplete="off"
             name="amount"
             className="form-control"
             id="amount"
@@ -227,8 +242,9 @@ class App extends Component {
         <br></br>
         {/* <button onClick={this.handleCreate}>Create</button> */}
         <button 
-          onClick={e => this.createLoan()}
-          type="submit" 
+          onClick={this.createLoan}
+          // type="submit" 
+          // name="createLoan"
           className="btn btn-primary"
           >
           Submit
