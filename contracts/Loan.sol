@@ -143,7 +143,8 @@ contract Loan is Stoppable {
     uint loanPeriod,
     address lender,
     address borrower,
-    uint status
+    uint status,
+    uint requiredDeposit
     )
     {
         fullAmount = loans[_loanId].fullAmount;
@@ -153,7 +154,8 @@ contract Loan is Stoppable {
         lender = loans[_loanId].lender;
         borrower = loans[_loanId].borrower;
         status = uint(loans[_loanId].status);
-        return (fullAmount, amount, interest, loanPeriod, lender, borrower, status);
+        requiredDeposit = loans[_loanId].requiredDeposit;
+        return (fullAmount, amount, interest, loanPeriod, lender, borrower, status, requiredDeposit);
     }
 }
 
