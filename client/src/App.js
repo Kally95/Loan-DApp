@@ -63,23 +63,23 @@ class App extends Component {
       console.error(error);
     }
   };
-  
+
 // Function to get the chain details of loan upon submitting the Loan. 
-  getLoanChainDetails = async () => {
-    try{
-      this.setState({blockNumber:"waiting.."});
-      this.setState({gasUsed:"waiting..."});
-      await web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt)=>{
-      console.log(err,txReceipt);
-      this.setState({txReceipt});
-    }); //await for getTransactionReceipt
-    await this.setState({blockNumber: this.state.txReceipt.blockNumber});
-    await this.setState({gasUsed: this.state.txReceipt.gasUsed});    
-    } 
-    catch(error){
-    console.log(error);
-    } 
-  } 
+  // getLoanChainDetails = async () => {
+  //   try{
+  //     this.setState({blockNumber:"waiting.."});
+  //     this.setState({gasUsed:"waiting..."});
+  //     await web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt)=>{
+  //     console.log(err,txReceipt);
+  //     this.setState({txReceipt});
+  //   }); //await for getTransactionReceipt
+  //     await this.setState({blockNumber: this.state.txReceipt.blockNumber});
+  //     await this.setState({gasUsed: this.state.txReceipt.gasUsed});    
+  //   } 
+  //     catch(error){
+  //     console.log(error);
+  //   } 
+  // } 
 
   createLoan = async () => {
     console.log("CREATE")
@@ -158,12 +158,9 @@ class App extends Component {
         <span>Account: {this.state.accounts ? this.state.accounts : null }</span>
         <br></br>
         <br></br>
-
-
-       <br></br>
-      <br></br>
-      <br></br>
-      <Container>
+        <br></br>
+        <br></br>
+        <br></br>
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
         <div><button onClick={this.findLoan}>Retrieve Loan</button></div>
@@ -176,44 +173,8 @@ class App extends Component {
             onChange={this.handleInput}
           />
         </div>
-         
-
-  <Table bordered responsive>
-                <thead>
-                  <tr>
-                    <th>Tx Receipt Category</th>
-                    <th>Values</th>
-                  </tr>
-                </thead>
-               
-                <tbody>
-                  {/* <tr>
-                    <td>IPFS Hash # stored on Eth Contract</td>
-                    <td>{this.state.ipfsHash}</td>
-                  </tr> */}
-                  <tr>
-                    <td>Ethereum Contract Address</td>
-                    <td>{this.state.ethAddress}</td>
-                  </tr>
-                  <tr>
-                    <td>Tx Hash # </td>
-                    <td>{this.state.transactionHash}</td>
-                  </tr>
-                  <tr>
-                    <td>Block Number # </td>
-                    <td>{this.state.blockNumber}</td>
-                  </tr>
-                  <tr>
-                    <td>Gas Used</td>
-                    <td>{this.state.gasUsed}</td>
-                  </tr>
-
-                </tbody>
-            </Table>
-        </Container>
       <form>
         <div className="form-group">
-
           <h1>Create a Loan</h1>
           <label htmlFor="interest">Interest Amount</label>
           <br></br>
@@ -290,7 +251,41 @@ class App extends Component {
           >
           Create
           </button>
-        <p>Full Amount: {this.state.fullAmount}</p>
+      <Container>
+        <Table bordered responsive className="txReceipt-table">
+                <thead>
+                  <tr>
+                    <th>Tx Receipt Category</th>
+                    <th>Values</th>
+                  </tr>
+                </thead>
+               
+                <tbody>
+                  {/* <tr>
+                    <td>IPFS Hash # stored on Eth Contract</td>
+                    <td>{this.state.ipfsHash}</td>
+                  </tr> */}
+                  <tr>
+                    <td>Ethereum Contract Address</td>
+                    <td>{this.state.ethAddress}</td>
+                  </tr>
+                  <tr>
+                    <td>Tx Hash # </td>
+                    <td>{this.state.transactionHash}</td>
+                  </tr>
+                  <tr>
+                    <td>Block Number # </td>
+                    <td>{this.state.blockNumber}</td>
+                  </tr>
+                  <tr>
+                    <td>Gas Used</td>
+                    <td>{this.state.gasUsed}</td>
+                  </tr>
+
+                </tbody>
+        </Table>
+      </Container>
+        {/* <p>Full Amount: {this.state.fullAmount}</p>
         <p>Deposit Paid: {this.state.depositPercentage}</p>
         <p>Borrower: {this.state.borrower}</p>
         <p>Lender: {this.state.accounts[0]}</p>
@@ -299,7 +294,7 @@ class App extends Component {
         <p>Duration: {this.state.loanPeriod} </p>
         {this.state > 0 ? (
         <p>End: {(new Date(parseInt(this.end) * 1000)).toLocaleString()}</p>
-        ) : null}
+        ) : null} */}
       </div>
     );
   }
