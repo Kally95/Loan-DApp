@@ -107,7 +107,10 @@ class App extends Component {
     let { accounts, contract, requiredDeposit, loanId } = this.state;
     await contract.methods
     .payLoanDeposit(loanId)
-    .send({from: accounts[0], value: requiredDeposit})
+    .send({
+      from: accounts[0],
+      value: requiredDeposit
+    })
     // Get requiredDeposit from Struct in Loan contract
   };
 
@@ -122,10 +125,10 @@ class App extends Component {
   // Retrieve funds is for the BORROWER to call
   // in order to retrieve the funds deposited by
   // the lender
-  retrieveFunds = async () => {
+  handleRetrieveFunds = async () => {
     let { loanId, contract, accounts } = this.state;
     await contract.methods
-    .retrieveFunds(loanId)
+    .retrieveLoanFunds(loanId)
     .call({from: accounts[0]})
   };
 
@@ -164,6 +167,30 @@ class App extends Component {
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
         <div><button onClick={this.findLoan}>Retrieve Loan</button></div>
+        <br></br>
+        <div>
+          <input
+            name="loanId"
+            className="form-control"
+            id="loanId"
+            onChange={this.handleInput}
+          />
+        </div>
+        <br></br>
+        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
+        <br></br>
+        <div><button onClick={this.payLoanDeposit}>Pay Deposit</button></div>
+        <div>
+        <br></br>
+          <input
+            name="loanId"
+            className="form-control"
+            id="loanId"
+            onChange={this.handleInput}
+          />
+        </div>
+        <br></br>
+        <div><button onClick={this.payBackLoan}>Pay Off Loan</button></div>
         <br></br>
         <div>
           <input
@@ -251,7 +278,11 @@ class App extends Component {
           >
           Create
           </button>
+          <br></br>
+          <br></br>
+          <br></br>
       <Container>
+      <Button onClick = {this.getLoanChainDetails}> Get Transaction Receipt </Button>
         <Table bordered responsive className="txReceipt-table">
                 <thead>
                   <tr>
@@ -262,23 +293,19 @@ class App extends Component {
                
                 <tbody>
                   {/* <tr>
-                    <td>IPFS Hash # stored on Eth Contract</td>
-                    <td>{this.state.ipfsHash}</td>
+                    <td>Ethereum Contract Address :</td>
+                    <td>{this.state.ethAddress}</td>
                   </tr> */}
                   <tr>
-                    <td>Ethereum Contract Address</td>
-                    <td>{this.state.ethAddress}</td>
-                  </tr>
-                  <tr>
-                    <td>Tx Hash # </td>
+                    <td>Tx Hash # :</td>
                     <td>{this.state.transactionHash}</td>
                   </tr>
                   <tr>
-                    <td>Block Number # </td>
+                    <td>Block Number # :</td>
                     <td>{this.state.blockNumber}</td>
                   </tr>
                   <tr>
-                    <td>Gas Used</td>
+                    <td>Gas Used :</td>
                     <td>{this.state.gasUsed}</td>
                   </tr>
 
