@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import {Table, Container, Button, Form } from 'react-bootstrap';
+import React, { Component } from 'react';
 import getWeb3 from "./getWeb3";
 import Loan from "./contracts/Loan.json";
 
@@ -13,7 +14,6 @@ import "./App.css";
 class App extends Component {
   constructor(props) {
     super(props)
-    this.createLoan = this.createLoan.bind(this);
     this.state = {
       status: ['PENDING', 'ACTIVE', 'RESOLVED'],
       web3: null,
@@ -26,7 +26,11 @@ class App extends Component {
       loanId: 0,
       fullAmount: 0,
       amount: 0,
-      requiredDeposit: 0
+      requiredDeposit: 0,
+      blockNumber:'',
+      transactionHash:'',
+      gasUsed:'',
+      txReceipt: ''   
     };
   }
 
@@ -59,11 +63,30 @@ class App extends Component {
       console.error(error);
     }
   };
+  
+// Function to get the chain details of loan upon submitting the Loan. 
+  getLoanChainDetails = async () => {
+    try{
+      this.setState({blockNumber:"waiting.."});
+      this.setState({gasUsed:"waiting..."});
+      await web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt)=>{
+      console.log(err,txReceipt);
+      this.setState({txReceipt});
+    }); //await for getTransactionReceipt
+    await this.setState({blockNumber: this.state.txReceipt.blockNumber});
+    await this.setState({gasUsed: this.state.txReceipt.gasUsed});    
+    } 
+    catch(error){
+    console.log(error);
+    } 
+  } 
 
   createLoan = async () => {
- 
+    console.log("CREATE")
+    let tx;
     let { accounts, contract,  interest, loanPeriod, borrower, depositPercentage, amount} = this.state;
-    await contract.methods.createLoan(
+    try{
+      tx = await contract.methods.createLoan(
       interest,
       loanPeriod,
       borrower,
@@ -73,7 +96,11 @@ class App extends Component {
       value: amount,
       gas: 650000
     })
-    
+    }
+    catch (ex) {
+      console.log(tx);
+
+    }
   }
 
   payLoanDeposit = async () => {
@@ -121,56 +148,69 @@ class App extends Component {
     console.log(this.state.interest);
   };
 
-  // handleGetLoan = () => {
-  //   const { accounts, contract } = this.state;
-  //   const { loanId } = this.state
-  //   console.log(this.state.loanId)
-  // }
-
   render() {
-    //console.log(this.state);
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
       <div className="App">
         <h2>Smart Contract Example</h2>
-        <span>Account: {this.state.accounts[0]}</span>
+        <span>Account: {this.state.accounts ? this.state.accounts : null }</span>
         <br></br>
         <br></br>
 
+
+       <br></br>
+      <br></br>
+      <br></br>
+      <Container>
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
         <div><button onClick={this.findLoan}>Retrieve Loan</button></div>
         <br></br>
-        <div><input
+        <div>
+          <input
             name="loanId"
             className="form-control"
             id="loanId"
             onChange={this.handleInput}
-          /></div>
-
-        <br></br>
-      {/* <form>
-        <div className="form-group">
-          <label htmlFor="interest">Interest Amount</label>
-          <br></br>
-          <input
-            name="interest"
-            className="form-control"
-            id="interest"
-            onChange={this.handleInput}
           />
-           <br></br>
-          <small id="emailHelp" className="form-text text-muted">Interest amount</small>
         </div>
-      </form> */}
-      {/* <br></br>
-      <button onClick={this.handleInterest} >Interest</button> */}
+         
 
-      <br></br>
-      <br></br>
-      
+  <Table bordered responsive>
+                <thead>
+                  <tr>
+                    <th>Tx Receipt Category</th>
+                    <th>Values</th>
+                  </tr>
+                </thead>
+               
+                <tbody>
+                  {/* <tr>
+                    <td>IPFS Hash # stored on Eth Contract</td>
+                    <td>{this.state.ipfsHash}</td>
+                  </tr> */}
+                  <tr>
+                    <td>Ethereum Contract Address</td>
+                    <td>{this.state.ethAddress}</td>
+                  </tr>
+                  <tr>
+                    <td>Tx Hash # </td>
+                    <td>{this.state.transactionHash}</td>
+                  </tr>
+                  <tr>
+                    <td>Block Number # </td>
+                    <td>{this.state.blockNumber}</td>
+                  </tr>
+                  <tr>
+                    <td>Gas Used</td>
+                    <td>{this.state.gasUsed}</td>
+                  </tr>
+
+                </tbody>
+            </Table>
+        </Container>
       <form>
         <div className="form-group">
 
@@ -241,15 +281,15 @@ class App extends Component {
       
         <br></br>
         {/* <button onClick={this.handleCreate}>Create</button> */}
+      </form>
         <button 
           onClick={this.createLoan}
           // type="submit" 
           // name="createLoan"
           className="btn btn-primary"
           >
-          Submit
+          Create
           </button>
-      </form>
         <p>Full Amount: {this.state.fullAmount}</p>
         <p>Deposit Paid: {this.state.depositPercentage}</p>
         <p>Borrower: {this.state.borrower}</p>
