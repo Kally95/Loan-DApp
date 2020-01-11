@@ -35,6 +35,7 @@ contract("Loan", (accounts) => {
     const amount = BN(50);
 
     it("Should successfully create a Loan", async () => {
+
       const CreateLoanResult = await contractInstance.createLoan(
         interest,
         loanPeriod,
@@ -52,12 +53,24 @@ contract("Loan", (accounts) => {
         "LogLoanCreation",
         "Event was not emitted correctly"
       );
-      console.log(CreateLoanResult.receipt.logs[0].args)
+
+      assert.strictEqual(
+        CreateLoanResult.receipt.logs[0].args.__length__,
+        2,
+        "Should expect 2 events to be emitted"
+      );
+
+      assert.strictEqual(
+        CreateLoanResult.receipt.logs[0].args._loanId.toString(10),
+        "1",
+        "loanId counter did not increment"
+      )
+
+      assert.strictEqual(
+        CreateLoanResult.receipt.logs[0].args._lender,
+        owner,
+        "Lender should be owner"
+      )
     });
-
-
-
   });
-
-
 });
