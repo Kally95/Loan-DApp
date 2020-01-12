@@ -261,6 +261,9 @@ contract("Loan", (accounts) => {
         // assert.strictEqual(retrieveFunds, "Funds were not retrieved successfully");
         // console.log(retrieveFunds)
       });
+    });
+
+    describe("Testing retrieveLoanFunds() failures", () => {
 
       it("Should throw if retrieveLoanFunds() called prematurely", async () => {
         
@@ -278,13 +281,93 @@ contract("Loan", (accounts) => {
         );
 
         const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
-        console.log(retrievedLoan)
 
         await utils.shouldThrow(
           contractInstance
           .retrieveLoanFunds
           (1, {from: borrower})
         );
+
+        it("Should throw if retrieveFunds() is called by non-borrower address", async () => {
+
+          const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+          
+          await utils
+          .shouldThrow(
+            contractInstance
+            .retrieveLoanFunds(1, {from: accounts[5]})
+          )
+
+        });
+
+      describe("Testing payBackLoan()", () => {
+
+        it("Should successfully pay back a loan", async () => {
+
+          await contractInstance.retrieveLoans(
+            1,
+            {from: owner}
+          );
+          
+          await contractInstance.payLoanDeposit(
+            1, 
+            {from: borrower, value: toWei("5", "ether")}
+          );
+
+          await contractInstance.retrieveLoanFunds(
+            1,
+            {from: borrower}
+          );
+
+          await contractInstance.retrieveLoans(
+            1,
+            {from: owner}
+          );
+
+          const txReceipt = await contractInstance.payBackLoan(
+            1,
+            {from: borrower, value: toWei("20", "ether")}
+          );
+
+          assert.isTrue(
+            txReceipt.receipt.status,
+            true,
+            "Satus is false"
+          );
+
+          assert.strictEqual(
+            txReceipt.receipt.logs[0].event,
+            "LogPaid",
+            "Event was not emitted correctly"
+          );
+
+          assert.strictEqual(
+            txReceipt.receipt.logs[0].args._paidBack.toString(10),
+            "20000000000000000000",
+            "Loan was not paid back"
+          );
+
+          assert.strictEqual(
+            txReceipt.receipt.logs[0].args.__length__,
+            3,
+            "Should expect 3 events to be emitted"
+          );
+
+          const statusCheck = await contractInstance.retrieveLoans(
+            1,
+            {from: owner}
+          );
+
+          assert.strictEqual(
+            statusCheck.status.toString(10),
+            "2",
+            "Loan status is not RESOLVED"
+          );
+
+        });
+        
+      });
+
         // const startBalance = new BN(await web3.eth.getBalance(borrower, {from:owner}));
 
         // const CreateLoanResult = await contractInstance.createLoan(
