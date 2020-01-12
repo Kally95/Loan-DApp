@@ -197,7 +197,7 @@ contract("Loan", (accounts) => {
           
         // Pay loan deposit with borrower address
         const paidDeposit = await contractInstance.payLoanDeposit(1, {from: borrower, value: toWei("5", "ether")})
-        console.log(paidDeposit)
+        // console.log(paidDeposit)
 
         assert.strictEqual(
           paidDeposit.receipt.status,
@@ -221,7 +221,7 @@ contract("Loan", (accounts) => {
 
         const retrieveTx = await contractInstance.retrieveLoanFunds(1, {from: borrower})
 
-        console.log(retrieveTx)
+        // console.log(retrieveTx)
 
         assert.strictEqual(
           retrieveTx.receipt.status,
@@ -237,7 +237,7 @@ contract("Loan", (accounts) => {
 
         const confirmState = await contractInstance.retrieveLoans(1, {from: owner});
 
-        console.log(confirmState)
+        // console.log(confirmState)
 
         assert.strictEqual(
           confirmState.status.toString(10),
@@ -262,9 +262,29 @@ contract("Loan", (accounts) => {
         // console.log(retrieveFunds)
       });
 
-      xit("tes test", async () => {
+      it("Should throw if retrieveLoanFunds() called prematurely", async () => {
         
+        // Create a Loan
+        const CreateLoanResult = await contractInstance.createLoan(
+          interest,
+          loanPeriod,
+          borrower,
+          depositPercentage,
+          {from: owner, value: toWei("20", "ether")});
         
+        assert.isTrue(
+          CreateLoanResult.receipt.status,
+          "Status is false"
+        );
+
+        const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+        console.log(retrievedLoan)
+
+        await utils.shouldThrow(
+          contractInstance
+          .retrieveLoanFunds
+          (1, {from: borrower})
+        );
         // const startBalance = new BN(await web3.eth.getBalance(borrower, {from:owner}));
 
         // const CreateLoanResult = await contractInstance.createLoan(
