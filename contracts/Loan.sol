@@ -6,14 +6,14 @@ import "./Stoppable.sol";
 contract Loan is Stoppable {
 
    using SafeMath for uint256;
-   
+
     enum Status {
         PENDING,
         ACTIVE,
         RESOLVED
         //DEFAULT
     }
-    
+
     struct Loans {
         uint fullAmount;
         uint amount;
@@ -25,7 +25,7 @@ contract Loan is Stoppable {
         Status status;
         uint requiredDeposit;
     }
-    
+
     uint public loanCounter;
     uint public loanId;
 
@@ -33,31 +33,32 @@ contract Loan is Stoppable {
     event LogDeposit(address indexed _borrower, uint indexed _depositAmount);
     event LogRetrieved(uint indexed _loanID, address indexed _borrower, uint indexed _amountRetrieved);
     event LogPaid(address indexed _borrower, uint indexed _loanID, uint indexed _paidBack);
-    
+
     mapping(uint256 => Loans) public loans;
 
     modifier paidDeposit(uint _loanId) {
          require(loans[_loanId].status == Status.ACTIVE, "This loan is not active");
         _;
     }
-    
+
     constructor() public {
         loanId = 1;
     }
-    
-    function createLoan(uint _interest, uint _loanPeriod, address _borrower, uint _depositPercentage) 
-    external 
+
+    function createLoan(uint _interest, uint _loanPeriod, address _borrower, uint _depositPercentage)
+    external
     payable
     whenRunning
     whenAlive
     returns(bool)
     {
+        require(_borrower != address(0x0), "Borrower's address cannot be 0");
         require(msg.value > 0, "Loan must have an associated Value");
         emit LogLoanCreation(msg.sender, loanId);
-        
+
         uint256 depositPercentage = msg.value.mul(_depositPercentage).div(100);
         uint256 fullAmount = msg.value + _interest;
-        
+
         loans[loanId] = Loans({
             fullAmount: fullAmount,
             amount: msg.value,
@@ -69,11 +70,11 @@ contract Loan is Stoppable {
             status: Status.PENDING,
             requiredDeposit: depositPercentage
         });
-        
+
         loanId = loanId + 1;
         return true;
     }
-    
+
     function payLoanDeposit(uint _loanId)
     external
     payable
@@ -83,20 +84,20 @@ contract Loan is Stoppable {
         require(msg.value == loans[_loanId].requiredDeposit, "You must deposit the right amount");
         require(msg.sender == loans[_loanId].borrower, "You must be the assigned borrower for this loan");
         loans[_loanId].status = Status.ACTIVE;
-        loans[_loanId].fullAmount -= loans[_loanId].requiredDeposit;
+        loans[_loanId].fullAmount = loans[_loanId].fullAmount.sub(loans[_loanId].requiredDeposit);
         (bool success, ) = loans[_loanId].lender.call.value(msg.value)("");
         require(success, "Error: Transfer failed.");
         emit LogDeposit(msg.sender, msg.value);
     }
-    
+
     // function isFinished() {
     // const now = new Date().getTime();
     // const loanEnd =  (new Date(parseInt(loan.end) * 1000)).getTime();
     // return (loanEnd > now) ? false : true;
     //}
 
-    function payBackLoan(uint _loanId) 
-    public 
+    function payBackLoan(uint _loanId)
+    public
     payable
     whenRunning
     whenAlive
@@ -107,11 +108,11 @@ contract Loan is Stoppable {
         // if (now <= loans[_loanId].end) {
         //     loans[_loanId].status = Status.DEFAULT;
         // }
-        
+
         loans[_loanId].status = Status.RESOLVED;
         (bool success, ) = loans[_loanId].lender.call.value(msg.value)("");
         require(success, "Error: Transfer failed.");
-        
+
         emit LogPaid(msg.sender, _loanId, msg.value);
     }
 
@@ -123,14 +124,14 @@ contract Loan is Stoppable {
         require(msg.sender == loans[_loanId].borrower, "Requires the borrower of that loan");
         require(loans[_loanId].amount != 0, "There are no funds to retrieve");
         uint256 loanAmount = loans[_loanId].amount;
-       
+
         loans[_loanId].amount = 0;
         (bool success, ) = msg.sender.call.value(loanAmount)("");
         require(success, "Error: Transfer failed.");
-        
+
         emit LogRetrieved(_loanId, msg.sender, loanAmount);
     }
-    
+
     function retrieveLoans(uint _loanId)
     public
     view
