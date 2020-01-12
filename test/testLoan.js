@@ -153,10 +153,8 @@ contract("Loan", (accounts) => {
 
     describe("Testing payLoanDeposit()", () => {
 
-      it("Should  pay a loan deposit and retrieve funds", async () => {
+      it("Should pay a loan deposit and retrieve funds", async () => {
 
-        // console.log(balance)
-        // The balance starts at 100
         // Create a Loan
         const CreateLoanResult = await contractInstance.createLoan(
           interest,
@@ -164,66 +162,99 @@ contract("Loan", (accounts) => {
           borrower,
           depositPercentage,
           {from: owner, value: toWei("20", "ether")});
-          console.log(CreateLoanResult)
-        // assert.isTrue(
-        //   CreateLoanResult.receipt.status,
-        //    "Status is false"
-        // );
-        // // After the Loan is made the balance drops down the 79 including gas fees
-
-        // const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
-        // console.log(retrievedLoan.fullAmount.toString(10))
-        // assert.strictEqual(
-        //   retrievedLoan.status.toString(10),
-        //    "0",
-        //    "Loan status is not PENDING"
-        //   );
-
-        // assert.strictEqual(
-        //   retrievedLoan.requiredDeposit.toString(10),
-        //   "5000000000000000000",
-        //   "Did not calculate 25% of 20 correctly"
-        // );
-
-        // assert.strictEqual(
-        //   retrievedLoan.fullAmount.toString(10),
-        //   "20000000000000000000",
-        //   "Full amount of loan is incorrect"
-        // );
-
-          
-        // // We console log the retrieved Loan to make sure it has been created
-
-        // // console.log(CreateLoanResult.receipt.logs[0]._loanId)
-        // assert.strictEqual(
-        //   CreateLoanResult.receipt.logs[0].args._loanId.toString(10),
-        //   "1",
-        //   "loanId counter did not increment"
-        // // );
-          
-        // // Pay loan deposit with borrower address
-        // const paidDeposit = await contractInstance.payLoanDeposit(1, {from: borrower, value: toWei("5", "ether")})
-      
-        // // assert.strictEqual(
-        // //   paidDeposit.receipt.status,
-        // //   true,
-        // //   "Status is false"
-        // // );
-
-        // // assert.strictEqual(
-        // //   paidDeposit.receipt.logs[0].event,
-        // //   "LogDeposit",
-        // //   "Event was not emitted correctly"
-        // // );
         
-        // // assert.strictEqual(
-        // //   paidDeposit.receipt.logs[0].args.__length__.toString(10),
-        // //   "2",
-        // //   "Should expect 2 events to be emitted"
-        // // );
-      
-        // const retrieve = await contractInstance.retrieveLoanFunds(1, {from: borrower})
-        // var balance = await web3.eth.getBalance(borrower)
+        assert.isTrue(
+          CreateLoanResult.receipt.status,
+          "Status is false"
+        );
+       // After the Loan is made the balance drops down the 79 including gas fees
+
+        const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+        // console.log(retrievedLoan.fullAmount.toString(10))
+        assert.strictEqual(
+          retrievedLoan.status.toString(10),
+          "0",
+          "Loan status is not PENDING"
+        );
+
+        assert.strictEqual(
+           retrievedLoan.requiredDeposit.toString(10),
+           "5000000000000000000",
+           "Did not calculate 25% of 20 correctly"
+        );
+
+        assert.strictEqual(
+          retrievedLoan.fullAmount.toString(10),
+          "25000000000000000000",
+          "Full amount of loan is incorrect"
+        );
+
+        assert.strictEqual(
+          CreateLoanResult.receipt.logs[0].args._loanId.toString(10),
+          "1",
+          "loanId counter did not increment"
+        );
+          
+        // Pay loan deposit with borrower address
+        const paidDeposit = await contractInstance.payLoanDeposit(1, {from: borrower, value: toWei("5", "ether")})
+        console.log(paidDeposit)
+
+        assert.strictEqual(
+          paidDeposit.receipt.status,
+          true,
+          "Status is false"
+        );
+
+        assert.strictEqual(
+          paidDeposit.receipt.logs[0].event,
+          "LogDeposit",
+          "Event was not emitted correctly"
+        );
+        
+        assert.strictEqual(
+          paidDeposit.receipt.logs[0].args.__length__.toString(10),
+          "2",
+          "Should expect 2 events to be emitted"
+        );
+        
+        // const balanceBefore = new BN(await web3.eth.getBalance(borrower))
+
+        const retrieveTx = await contractInstance.retrieveLoanFunds(1, {from: borrower})
+
+        console.log(retrieveTx)
+
+        assert.strictEqual(
+          retrieveTx.receipt.status,
+          true,
+          "withdraw event was not true"
+        );
+
+        assert.strictEqual(
+          retrieveTx.receipt.logs[0].event,
+          "LogRetrieved",
+          "Event was not emitted correctly" 
+        );
+
+        const confirmState = await contractInstance.retrieveLoans(1, {from: owner});
+
+        console.log(confirmState)
+
+        assert.strictEqual(
+          confirmState.status.toString(10),
+          "1",
+          "Loan status is not ACTIVE"
+        );
+
+        // Testing Tx Fee's
+        // const hash = retrieveTx.receipt.transactionHash;
+        // const tx = await web3.eth.getTransaction(hash);
+        // const gasUsed = retrieveTx.receipt.gasUsed;
+        // const gasPrice = tx.gasPRice;
+        // const txFee = new BN(gasUsed * gasPrice);
+        // const balanceNow = new BN(await web3.eth.getBalance(borrower));
+        // const receiveAmount = 20
+        // balanceAfter = await web3.eth.getBalance(borrower)
+        // assert.strictEqual(balanceAfter, balanceBefore + loanAmount, "fail")
         // console.log(balance)
         // Borrower retrieves funds from loan
         // const retrieveFunds =  await contractInstance.retrieveLoanFunds.call(1, {from: borrower});
