@@ -365,7 +365,61 @@ contract("Loan", (accounts) => {
           );
 
         });
-        
+
+      });
+
+      describe("Testing retrieveLoans()", () => {
+
+        it("Should successfully retrieve all loan values", async () => {
+          
+          const loanResult = await contractInstance.retrieveLoans(
+            1,
+            {from: owner}
+          );
+
+          assert.strictEqual(
+            loanResult.fullAmount.toString(10),
+            "20000000000000000000",
+            "Full amount of loan did not return"
+          );
+
+          assert.strictEqual(
+            loanResult.amount.toString(10),
+            "0",
+            "Amount did not return"
+          );
+
+          assert.strictEqual(
+            loanResult.interest.toString(10),
+            "5000000000000000000",
+            "Interest did not return"
+          );
+
+          assert.strictEqual(
+            loanResult.lender,
+            owner,
+            "Lender address did not return"
+          );
+
+          assert.strictEqual(
+            loanResult.borrower,
+            borrower,
+            "Borrower address did not return"
+          );
+          
+          assert.strictEqual(
+            loanResult.status.toString(10),
+            "2",
+            "Loan status did not return"
+          );
+
+          assert.strictEqual(
+            loanResult.requiredDeposit.toString(10),
+            "5000000000000000000",
+            "Required deposit did not return"
+          );
+
+        });
       });
 
         // const startBalance = new BN(await web3.eth.getBalance(borrower, {from:owner}));
