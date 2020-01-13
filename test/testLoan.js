@@ -295,7 +295,7 @@ contract("Loan", (accounts) => {
           await utils
           .shouldThrow(
             contractInstance
-            .retrieveLoanFunds(1, {from: accounts[5]})
+            .retrieveLoanFunds(1, {from: recipient2 })
           )
 
         });
@@ -371,7 +371,7 @@ contract("Loan", (accounts) => {
       describe("Testing retrieveLoans()", () => {
 
         it("Should successfully retrieve all loan values", async () => {
-          
+
           const loanResult = await contractInstance.retrieveLoans(
             1,
             {from: owner}
