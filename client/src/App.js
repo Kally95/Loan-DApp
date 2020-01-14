@@ -125,10 +125,11 @@ class App extends Component {
 
   payBackLoan = async () => {
     let { loanId, contract, accounts, fullAmount } = this.state;
+    const payBackAmount = web3.utils.toWei(this.state.amount);
     // const fullLoanAmount = web3.utils.toBN(fullAmount);
     await contract.methods
       .payBackLoan(loanId)
-      .send({from: accounts[0], value: fullAmount}); 
+      .send({from: accounts[0], value: payBackAmount}); 
   };
   
   // Retrieve funds is for the BORROWER to call
@@ -235,9 +236,9 @@ class App extends Component {
         <br></br>
         <div>
           <input
-            name="loanId"
+            name="amount"
             className="form-control"
-            id="loanId"
+            id="amount"
             onChange={this.handleInput}
           />
         </div>
