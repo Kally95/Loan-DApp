@@ -8,7 +8,6 @@ contract("Loan", (accounts) => {
   const [owner, recipient1, recipient2, recipient3] = accounts;
   const zeroAdd = 0x0000000000000000000000000000000000000000;
   const interest = new BN(5000000000000000000);
-  const loanPeriod = 5;
   const borrower = accounts[1];
   const depositPercentage = 25;
   let contractInstance;
@@ -37,7 +36,6 @@ contract("Loan", (accounts) => {
 
       const CreateLoanResult = await contractInstance.createLoan(
         interest,
-        loanPeriod,
         borrower,
         depositPercentage,
         {from: owner, value: amount});
@@ -81,7 +79,6 @@ contract("Loan", (accounts) => {
         contractInstance
         .createLoan(
         interest,
-        loanPeriod,
         zeroAdd,
         depositPercentage,
         {from: owner, value: amount})
@@ -93,7 +90,6 @@ contract("Loan", (accounts) => {
         contractInstance
         .createLoan(
         interest,
-        loanPeriod,
         borrower,
         depositPercentage,
         {from: owner, value: 0 })
@@ -105,7 +101,6 @@ contract("Loan", (accounts) => {
         contractInstance
         .createLoan(
         interest,
-        loanPeriod,
         borrower,
         depositPercentage,
         {from: owner, value: 0 })
@@ -126,7 +121,6 @@ contract("Loan", (accounts) => {
         contractInstance
         .createLoan(
         interest,
-        loanPeriod,
         borrower,
         depositPercentage,
         {from: owner, value: amount})
@@ -143,7 +137,6 @@ contract("Loan", (accounts) => {
 
       await utils.shouldThrow(contractInstance.createLoan(
         interest,
-        loanPeriod,
         borrower,
         depositPercentage,
         {from: owner, value: amount}));
@@ -158,7 +151,6 @@ contract("Loan", (accounts) => {
         // Create a Loan
         const CreateLoanResult = await contractInstance.createLoan(
           interest,
-          loanPeriod,
           borrower,
           depositPercentage,
           {from: owner, value: toWei("20", "ether")});
@@ -270,7 +262,6 @@ contract("Loan", (accounts) => {
         // Create a Loan
         const CreateLoanResult = await contractInstance.createLoan(
           interest,
-          loanPeriod,
           borrower,
           depositPercentage,
           {from: owner, value: toWei("20", "ether")});

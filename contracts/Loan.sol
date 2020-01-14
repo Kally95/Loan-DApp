@@ -43,7 +43,7 @@ contract Loan is Stoppable {
         loanId = 1;
     }
 
-    function createLoan(uint _interest, bytes32 _borrower, uint _depositPercentage)
+    function createLoan(uint _interest, address _borrower, uint _depositPercentage)
     external
     payable
     whenRunning
@@ -63,7 +63,7 @@ contract Loan is Stoppable {
             interest: _interest,
             ID: loanId,
             lender: msg.sender,
-            borrower: address(_borrower),
+            borrower: _borrower,
             status: Status.PENDING,
             requiredDeposit: depositPercentage
         });

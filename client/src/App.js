@@ -32,7 +32,7 @@ class App extends Component {
       blockNumber:'',
       transactionHash:'',
       gasUsed:'',
-      txReceipt: ''   
+      txReceipt: ''
     };
   }
 
@@ -66,25 +66,24 @@ class App extends Component {
     }
   };
 
-// Function to get the chain details of loan upon submitting the Loan. 
-  // getLoanChainDetails = async () => {
-  //   try{
-  //     this.setState({blockNumber:"waiting.."});
-  //     this.setState({gasUsed:"waiting..."});
-  //     await web3.eth.getTransactionReceipt(this.state.transactionHash, (err, txReceipt)=>{
-  //     console.log(err,txReceipt);
-  //     this.setState({txReceipt});
-  //   }); //await for getTransactionReceipt
-  //     await this.setState({blockNumber: this.state.txReceipt.blockNumber});
-  //     await this.setState({gasUsed: this.state.txReceipt.gasUsed});    
-  //   } 
-  //     catch(error){
-  //     console.log(error);
-  //   } 
-  // } 
+//Function to get the chain details of loan upon submitting the Loan. 
+  getLoanTxDetails = async () => {
+    try{
+      this.setState({blockNumber:"waiting.."});
+      this.setState({gasUsed:"waiting..."});
+      await web3.eth.getTransactionReceipt(this.state.currentLoan, (err, txReceipt)=>{
+      console.log(err,txReceipt);
+      this.setState({txReceipt});
+    }); //await for getTransactionReceipt
+      await this.setState({blockNumber: this.state.txReceipt.blockNumber});
+      await this.setState({gasUsed: this.state.txReceipt.gasUsed});    
+    } 
+      catch(error){
+      console.log(error);
+    } 
+  } 
 
   createLoan = async () => {
-    console.log("CREATE")
     let tx;
     const etherAmount = web3.utils.toWei(this.state.amount);
     const interestAmount = web3.utils.toWei(this.state.interest);
@@ -109,6 +108,7 @@ class App extends Component {
 
   payLoanDeposit = async () => {
     let { accounts, contract, requiredDeposit, loanId } = this.state;
+    const depositAmount = web3.utils.toWei(this.state.amount);
     console.log(this.state)
     console.log("this is loandID" + loanId)
     try {
@@ -116,7 +116,7 @@ class App extends Component {
     .payLoanDeposit(loanId)
     .send({
       from: accounts[0],
-      value: requiredDeposit
+      value: depositAmount
     }) } catch (err) {
       console.log(err)
     }
@@ -179,8 +179,6 @@ class App extends Component {
         <br></br>
         <div><button onClick={this.handleRetrieveLoans}>Retrieve Loan</button></div>
         <br></br>
-        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
-        <br></br>
         <div>
           <input
             name="loanId"
@@ -226,19 +224,18 @@ class App extends Component {
                 </tbody>
         </Table>
         <br></br>
-        <br></br>
-
-        <br></br>
         <div><button onClick={this.payLoanDeposit}>Pay Deposit</button></div>
         <div>
         <br></br>
           <input
-            name="loanId"
+            name="amount"
             className="form-control"
-            id="loanId"
+            id="amount"
             onChange={this.handleInput}
           />
         </div>
+        <br></br>
+        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
         <br></br>
         <div><button onClick={this.payBackLoan}>Pay Off Loan</button></div>
         <br></br>
@@ -292,7 +289,7 @@ class App extends Component {
         </div>
         <br></br>
         <div className="form-group">
-          <label htmlFor="depositPercentage">Deposit Percentage</label>
+          <label htmlFor="depositPercentage">Deposit Percentage (%)</label>
           <br></br>
           <input
             autoComplete="off"
@@ -332,7 +329,6 @@ class App extends Component {
           <br></br>
           <br></br>
       <Container>
-      <Button onClick = {this.getLoanChainDetails}> Get Transaction Receipt </Button>
         <Table bordered responsive className="txReceipt-table">
                 <thead>
                   <tr>
@@ -347,11 +343,11 @@ class App extends Component {
                     <td>{this.state.ethAddress}</td>
                   </tr> */}
                   <tr>
-                    <td>Tx Hash # :</td>
+                    <td>Tx Hash :</td>
                     <td>{this.state.transactionHash}</td>
                   </tr>
                   <tr>
-                    <td>Block Number # :</td>
+                    <td>Block Number :</td>
                     <td>{this.state.blockNumber}</td>
                   </tr>
                   <tr>
@@ -361,17 +357,12 @@ class App extends Component {
 
                 </tbody>
         </Table>
+        <br></br>
+        <br></br>
+      <Button onClick = {this.getLoanTxDetails}> Get Transaction Receipt </Button>
+      <br></br>
+      <br></br>
       </Container>
-        {/* <p>Full Amount: {this.state.fullAmount}</p>
-        <p>Deposit Paid: {this.state.depositPercentage}</p>
-        <p>Borrower: {this.state.borrower}</p>
-        <p>Lender: {this.state.accounts[0]}</p>
-        <p>Amount: {this.state.amount}</p>
-        <p>Interest: {this.state.interest} </p>
-        <p>Duration: {this.state.loanPeriod} </p>
-        {this.state > 0 ? (
-        <p>End: {(new Date(parseInt(this.end) * 1000)).toLocaleString()}</p>
-        ) : null} */}
       </div>
     );
   }
