@@ -2,7 +2,7 @@ import {Table, Container, Button, Form } from 'react-bootstrap';
 import React, { Component } from 'react';
 import getWeb3 from "./getWeb3";
 import Loan from "./contracts/Loan.json";
-
+import web3 from "web3";
 // import { makeStyles } from '@material-ui/core/styles';
 // import AppBar from '@material-ui/core/AppBar';
 // import Toolbar from '@material-ui/core/Toolbar';
@@ -17,6 +17,7 @@ class App extends Component {
     this.state = {
       status: ['PENDING', 'ACTIVE', 'RESOLVED'],
       web3: null,
+      currentLoan: null,
       accounts: null,
       contract: null,
       interest: null,
@@ -85,16 +86,19 @@ class App extends Component {
   createLoan = async () => {
     console.log("CREATE")
     let tx;
-    let { accounts, contract,  interest, borrower, depositPercentage, amount} = this.state;
+    const etherAmount = web3.utils.toWei(this.state.amount);
+    const interestAmount = web3.utils.toWei(this.state.interest);
+    console.log(etherAmount)
+    let { accounts, contract, interest, borrower, depositPercentage, amount} = this.state;
     try{
+      console.log(borrower)
       tx = await contract.methods.createLoan(
-      interest,
+      interestAmount,
       borrower,
       depositPercentage
     ).send({
       from: accounts[0],
-      value: amount,
-      gas: 650000
+      value: etherAmount
     })
     }
     catch (ex) {
@@ -105,12 +109,17 @@ class App extends Component {
 
   payLoanDeposit = async () => {
     let { accounts, contract, requiredDeposit, loanId } = this.state;
+    console.log(this.state)
+    console.log("this is loandID" + loanId)
+    try {
     await contract.methods
     .payLoanDeposit(loanId)
     .send({
       from: accounts[0],
       value: requiredDeposit
-    })
+    }) } catch (err) {
+      console.log(err)
+    }
     // Get requiredDeposit from Struct in Loan contract
   };
 
@@ -135,8 +144,10 @@ class App extends Component {
   handleRetrieveLoans = async () => {
     let { loanId, contract, accounts } = this.state;
     let currentLoan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
-    console.log(currentLoan);
+    console.log(currentLoan)
+    console.log(web3.utils.fromWei(currentLoan.fullAmount));
     this.setState({ currentLoan });
+
   };
 
   handleInput = (event) => {
@@ -190,19 +201,27 @@ class App extends Component {
                 <tbody>
                   <tr>
                     <td>Full Loan Amount :</td>
-                    <td>{this.state.fullAmount}</td>
+                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.fullAmount) : null}</td>
                   </tr>
                   <tr>
                     <td>Interest :</td>
-                    <td>{this.state.interest}</td>
+                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.interest) : null}</td>
                   </tr>
                   <tr>
                     <td>Borrower :</td>
-                    <td>{this.state.borrower}</td>
+                    <td>{this.state.currentLoan ? this.state.currentLoan.borrower : null}</td>
                   </tr>
                   <tr>
                     <td>Lender :</td>
-                    <td>{this.state.lender}</td>
+                    <td>{this.state.currentLoan ? this.state.currentLoan.lender : null}</td>
+                  </tr>
+                  <tr>
+                    <td>Deposit Required :</td>
+                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.requiredDeposit) : null}</td>
+                  </tr>
+                  <tr>
+                    <td>Loan Status :</td>
+                    <td>{this.state.currentLoan ? this.state.currentLoan.status : null}</td>
                   </tr>
                 </tbody>
         </Table>
