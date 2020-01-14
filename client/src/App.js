@@ -138,7 +138,7 @@ class App extends Component {
     let { loanId, contract, accounts } = this.state;
     await contract.methods
     .retrieveLoanFunds(loanId)
-    .call({from: accounts[0]})
+    .send({from: accounts[0]})
   };
 
   handleRetrieveLoans = async () => {
@@ -154,12 +154,6 @@ class App extends Component {
     console.log(event.target.name)
     console.log(event.target.value)
     this.setState({ [event.target.name]: event.target.value });
-  };
-
-  handleInterest = () => {
-    const { accounts, contract } = this.state;
-    const { interest } = this.state
-    console.log(this.state.interest);
   };
 
   render() {
