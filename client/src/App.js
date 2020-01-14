@@ -132,7 +132,7 @@ class App extends Component {
     .call({from: accounts[0]})
   };
 
-  findLoan = async () => {
+  handleRetrieveLoans = async () => {
     let { loanId, contract, accounts } = this.state;
     let loan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
     console.log(loan);
@@ -166,7 +166,7 @@ class App extends Component {
         <br></br>
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
-        <div><button onClick={this.findLoan}>Retrieve Loan</button></div>
+        <div><button onClick={this.handleRetrieveLoans}>Retrieve Loan</button></div>
         <br></br>
         <div>
           <input
