@@ -214,7 +214,7 @@ class App extends Component {
                   </tr>
                   <tr>
                     <td>Loan Status :</td>
-                    <td>{this.state.currentLoan ? this.state.currentLoan.status : null}</td>
+                    <td>{this.state.currentLoan ? this.state.status[this.state.currentLoan.status] : null}</td>
                   </tr>
                 </tbody>
         </Table>
@@ -333,10 +333,6 @@ class App extends Component {
                 </thead>
                
                 <tbody>
-                  {/* <tr>
-                    <td>Ethereum Contract Address :</td>
-                    <td>{this.state.ethAddress}</td>
-                  </tr> */}
                   <tr>
                     <td>Tx Hash :</td>
                     <td>{this.state.transactionHash}</td>
