@@ -11,7 +11,6 @@ contract Loan is Stoppable {
         PENDING,
         ACTIVE,
         RESOLVED
-        //DEFAULT
     }
 
     struct Loans {
@@ -19,7 +18,6 @@ contract Loan is Stoppable {
         uint amount;
         uint interest;
         uint ID;
-        uint end;
         address lender;
         address borrower;
         Status status;
@@ -45,7 +43,7 @@ contract Loan is Stoppable {
         loanId = 1;
     }
 
-    function createLoan(uint _interest, uint _loanPeriod, address _borrower, uint _depositPercentage)
+    function createLoan(uint _interest, address _borrower, uint _depositPercentage)
     external
     payable
     whenRunning
@@ -64,7 +62,6 @@ contract Loan is Stoppable {
             amount: msg.value,
             interest: _interest,
             ID: loanId,
-            end: now + _loanPeriod,
             lender: msg.sender,
             borrower: _borrower,
             status: Status.PENDING,
@@ -80,7 +77,7 @@ contract Loan is Stoppable {
     payable
     whenRunning
     whenAlive
-    {   require(loans[_loanId].status == Status.PENDING);
+    {   require(loans[_loanId].status == Status.PENDING, "Loan status must be PENDING");
         require(msg.value == loans[_loanId].requiredDeposit, "You must deposit the right amount");
         require(msg.sender == loans[_loanId].borrower, "You must be the assigned borrower for this loan");
         loans[_loanId].status = Status.ACTIVE;
@@ -90,24 +87,15 @@ contract Loan is Stoppable {
         emit LogDeposit(msg.sender, msg.value);
     }
 
-    // function isFinished() {
-    // const now = new Date().getTime();
-    // const loanEnd =  (new Date(parseInt(loan.end) * 1000)).getTime();
-    // return (loanEnd > now) ? false : true;
-    //}
-
     function payBackLoan(uint _loanId)
     public
     payable
     whenRunning
     whenAlive
-    {   require(loans[_loanId].status == Status.ACTIVE);
+    {
         require(msg.sender == loans[_loanId].borrower, "You must be the assigned borrower for this loan");
         require(msg.value == (loans[_loanId].fullAmount), "You must pay the full loan amount includinginterest");
-        require(loans[_loanId].status == Status.ACTIVE);
-        // if (now <= loans[_loanId].end) {
-        //     loans[_loanId].status = Status.DEFAULT;
-        // }
+        require(loans[_loanId].status == Status.ACTIVE, "Loan status must be ACTIVE");
 
         loans[_loanId].status = Status.RESOLVED;
         (bool success, ) = loans[_loanId].lender.call.value(msg.value)("");
@@ -141,7 +129,6 @@ contract Loan is Stoppable {
     uint fullAmount,
     uint amount,
     uint interest,
-    uint loanPeriod,
     address lender,
     address borrower,
     uint status,
@@ -151,12 +138,11 @@ contract Loan is Stoppable {
         fullAmount = loans[_loanId].fullAmount;
         amount = loans[_loanId].amount;
         interest = loans[_loanId].interest;
-        loanPeriod = loans[_loanId].end;
         lender = loans[_loanId].lender;
         borrower = loans[_loanId].borrower;
         status = uint(loans[_loanId].status);
         requiredDeposit = loans[_loanId].requiredDeposit;
-        return (fullAmount, amount, interest, loanPeriod, lender, borrower, status, requiredDeposit);
+        return (fullAmount, amount, interest, lender, borrower, status, requiredDeposit);
     }
 }
 

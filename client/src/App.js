@@ -19,14 +19,15 @@ class App extends Component {
       web3: null,
       accounts: null,
       contract: null,
-      interest: 0,
-      loanPeriod: 0,
-      borrower: 0,
-      depositPercentage : 0,
-      loanId: 0,
-      fullAmount: 0,
-      amount: 0,
-      requiredDeposit: 0,
+      interest: null,
+      loanPeriod: null,
+      borrower: null,
+      lender: null,
+      depositPercentage : null,
+      loanId: null,
+      fullAmount: null,
+      amount: null,
+      requiredDeposit: null,
       blockNumber:'',
       transactionHash:'',
       gasUsed:'',
@@ -84,11 +85,10 @@ class App extends Component {
   createLoan = async () => {
     console.log("CREATE")
     let tx;
-    let { accounts, contract,  interest, loanPeriod, borrower, depositPercentage, amount} = this.state;
+    let { accounts, contract,  interest, borrower, depositPercentage, amount} = this.state;
     try{
       tx = await contract.methods.createLoan(
       interest,
-      loanPeriod,
       borrower,
       depositPercentage
     ).send({
@@ -134,9 +134,9 @@ class App extends Component {
 
   handleRetrieveLoans = async () => {
     let { loanId, contract, accounts } = this.state;
-    let loan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
-    console.log(loan);
-    this.setState({ loan });
+    let currentLoan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
+    console.log(currentLoan);
+    this.setState({ currentLoan });
   };
 
   handleInput = (event) => {
@@ -168,6 +168,8 @@ class App extends Component {
         <br></br>
         <div><button onClick={this.handleRetrieveLoans}>Retrieve Loan</button></div>
         <br></br>
+        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
+        <br></br>
         <div>
           <input
             name="loanId"
@@ -176,8 +178,37 @@ class App extends Component {
             onChange={this.handleInput}
           />
         </div>
+      
+        <Table bordered responsive className="retrieveLoan-table">
+                <thead>
+                  <tr>
+                    <th>Loan Details:</th>
+                    <th>Values</th>
+                  </tr>
+                </thead>
+               
+                <tbody>
+                  <tr>
+                    <td>Full Loan Amount :</td>
+                    <td>{this.state.fullAmount}</td>
+                  </tr>
+                  <tr>
+                    <td>Interest :</td>
+                    <td>{this.state.interest}</td>
+                  </tr>
+                  <tr>
+                    <td>Borrower :</td>
+                    <td>{this.state.borrower}</td>
+                  </tr>
+                  <tr>
+                    <td>Lender :</td>
+                    <td>{this.state.lender}</td>
+                  </tr>
+                </tbody>
+        </Table>
         <br></br>
-        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
+        <br></br>
+
         <br></br>
         <div><button onClick={this.payLoanDeposit}>Pay Deposit</button></div>
         <div>
@@ -214,8 +245,8 @@ class App extends Component {
           />
            <br></br>
         </div>
-        <br></br>
-        <div className="form-group">
+
+        {/* <div className="form-group">
           <label htmlFor="loanPeriod">Loan Period</label>
           <br></br>
           <input
@@ -226,7 +257,7 @@ class App extends Component {
             onChange={this.handleInput}
           />
            <br></br>
-        </div>
+        </div> */}
         <br></br>
         <div className="form-group">
           <label htmlFor="borrower">Borrower</label>
