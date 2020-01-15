@@ -89,6 +89,10 @@ to{border-right-color: transparent;}
   border-radius: 3px;
   border: #4A00E0 solid 1px;
   width: 20px;
+
+}
+.create-loan-form:hover {
+  box-shadow: 0 0 18px rgba(0,0,0,0.3);
 }
 
 hr {
