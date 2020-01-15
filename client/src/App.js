@@ -1,15 +1,12 @@
-import {Table, Container, Button, Form } from 'react-bootstrap';
+import {Container, Table} from 'react-bootstrap';
 import React, { Component } from 'react';
+import Button from '@material-ui/core/Button'
 import getWeb3 from "./getWeb3";
 import Loan from "./contracts/Loan.json";
 import web3 from "web3";
-// import { makeStyles } from '@material-ui/core/styles';
-// import AppBar from '@material-ui/core/AppBar';
-// import Toolbar from '@material-ui/core/Toolbar';
-// import Typography from '@material-ui/core/Typography';
-
 
 import "./App.css";
+
 
 class App extends Component {
   constructor(props) {
@@ -165,15 +162,18 @@ class App extends Component {
     console.log(event.target.value)
     this.setState({ [event.target.name]: event.target.value });
   };
-  //0x41fafFaa11a9b57858ceeF3d371A55dde9ef764f
+ 
+  
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
+  
     console.log(this.state.transactionObjects)
     return (
       <div className="App">
-        <h2>Smart Contract Example</h2>
+        <h2>Loan Machine</h2>
+        <h4>Built on Smart Contracts</h4>
         <span>Account: {this.state.accounts ? this.state.accounts : null }</span>
         <br></br>
         <br></br>
@@ -182,7 +182,10 @@ class App extends Component {
         <br></br>
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <br></br>
-        <div><button onClick={this.handleRetrieveLoans}>Retrieve Loan</button></div>
+        <Button onClick={this.handleRetrieveLoans} variant="contained" color="">
+        Retrieve Loan
+        </Button>
+        <br></br>
         <br></br>
         <div>
           <input
@@ -192,8 +195,8 @@ class App extends Component {
             onChange={this.handleInput}
           />
         </div>
-      
-        <Table bordered responsive className="retrieveLoan-table">
+  
+        <Table bordered responsive className="x">
                 <thead>
                   <tr>
                     <th>Loan Details:</th>
@@ -203,7 +206,7 @@ class App extends Component {
                
                 <tbody>
                   <tr>
-                    <td>Full Loan Amount :</td>
+                    <td>Full Loan Amount:</td>
                     <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.fullAmount) : null}</td>
                   </tr>
                   <tr>
@@ -229,7 +232,10 @@ class App extends Component {
                 </tbody>
         </Table>
         <br></br>
-        <div><button onClick={this.payLoanDeposit}>Pay Deposit</button></div>
+        <Button onClick={this.payLoanDeposit} variant="contained" color="">
+        Pay Deposit
+        </Button>
+        {/* <div><button >Pay Deposit</button></div> */}
         <div>
         <br></br>
           <input
@@ -240,9 +246,16 @@ class App extends Component {
           />
         </div>
         <br></br>
-        <div><button onClick={this.handleRetrieveFunds}>Retrieve Funds</button></div>
+        <Button onClick={this.handleRetrieveFunds} variant="contained" color="">
+        Retrieve Funds
+        </Button>
         <br></br>
-        <div><button onClick={this.payBackLoan}>Pay Off Loan</button></div>
+        <br></br>
+        <br></br>
+        <Button  onClick={this.payBackLoan} variant="contained" color="">
+        Pay Off Loan
+        </Button>
+        <br></br>
         <br></br>
         <div>
           <input
@@ -266,19 +279,6 @@ class App extends Component {
           />
            <br></br>
         </div>
-
-        {/* <div className="form-group">
-          <label htmlFor="loanPeriod">Loan Period</label>
-          <br></br>
-          <input
-            autoComplete="off"
-            name="loanPeriod"
-            className="form-control"
-            id="loanPeriod"
-            onChange={this.handleInput}
-          />
-           <br></br>
-        </div> */}
         <br></br>
         <div className="form-group">
           <label htmlFor="borrower">Borrower</label>
@@ -322,14 +322,10 @@ class App extends Component {
         <br></br>
         {/* <button onClick={this.handleCreate}>Create</button> */}
       </form>
-        <button 
-          onClick={this.createLoan}
-          // type="submit" 
-          // name="createLoan"
-          className="btn btn-primary"
-          >
-          Create
-          </button>
+      <Button onClick={this.createLoan} variant="contained" color="">
+      Create
+      </Button>
+
           <br></br>
           <br></br>
           <br></br>
@@ -345,7 +341,8 @@ class App extends Component {
                 <tbody>
                   <tr>
                     <td>Tx Hash :</td>
-                    <td>{this.state.transactionHash}</td>
+                    <td>
+                      {this.state.transactionHash}</td>
                   </tr>
                   <tr>
                     <td>Block Number :</td>
@@ -360,7 +357,7 @@ class App extends Component {
         </Table>
         <br></br>
         <br></br>
-      <Button onClick = {this.getLoanTxDetails}> Get Transaction Receipt </Button>
+      <Button onClick = {this.getLoanTxDetails}> Transaction Receipt </Button>
       <br></br>
       <br></br>
       </Container>
