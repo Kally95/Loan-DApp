@@ -174,8 +174,9 @@ class App extends Component {
       <div className="App">
         <div className="Loan-app-header">
         <h1>LOANR</h1>
+        <img className="header-img" src="https://cdn.iconscout.com/icon/free/png-256/ethereum-3-569581.png"/>
         <p class="line-1 anim-typewriter">Built on Ethereum smart contracts</p>
-        <span>Account: {this.state.accounts ? this.state.accounts : null }</span>
+        <span className="account-address">Account: {this.state.accounts ? this.state.accounts : null }</span>
         </div>
      
         <div>This Loan has an ID of: {this.state.loanId}</div>

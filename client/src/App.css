@@ -24,7 +24,8 @@
 
 .line-1{
   position: relative;
-  top: 50%;  
+  top: -86px;
+
   width: 15em;
   margin: 0 auto;
   border-right: 2px solid rgba(255,255,255,.75);
@@ -35,7 +36,10 @@
   transform: translateY(-50%);  
   font-family: 'Poppins', sans-serif;;  
 }
-
+.account-address {
+  position: relative;
+  top: -171px;
+}
 /* Animation */
 .anim-typewriter{
 animation: typewriter 4s steps(44) 1s 1 normal both,
@@ -43,11 +47,18 @@ animation: typewriter 4s steps(44) 1s 1 normal both,
 }
 @keyframes typewriter{
 from{width: 0;}
-to{width: 17em;}
+to{width: 17.5em;}
 }
 @keyframes blinkTextCursor{
 from{border-right-color: rgba(255,255,255,.75);}
 to{border-right-color: transparent;}
+}
+
+.header-img {
+    height: 100px;
+    width: 100px;
+    position: relative;
+    bottom: -36px;
 }
 
 .App-header {
