@@ -22,6 +22,18 @@
   color: white;
 }
 
+.payDeposit-butt {
+  margin: 10px !important;
+}
+.retrieveFunds-butt {
+  margin: 10px 30px !important;
+}
+
+#payLoan {
+  position: relative !important;
+  left: 109px !important;
+}
+
 .line-1{
   position: relative;
   top: -86px;
@@ -34,7 +46,7 @@
   white-space: nowrap;
   overflow: hidden;
   transform: translateY(-50%);  
-  font-family: 'Poppins', sans-serif;;  
+  font-family: 'Poppins', sans-serif;  
 }
 .account-address {
   position: relative;
@@ -71,12 +83,46 @@ to{border-right-color: transparent;}
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.create-loan-form {
+  margin-top: 25px !important;
+  margin-bottom: 10px !important;
+  border-radius: 3px;
+  border: #4A00E0 solid 1px;
+  width: 20px;
+}
+
+hr {
+  
+  width: 148px;
+  height: 1px;
+  border-color: #4A00E0;
+  background: #4A00E0;
+  border-radius: 19px;
+}
+#interest,
+#borrower,
+#depositPercentage,
+#amount {
+  width: 200px;
+  margin: 0 auto;
+  margin-bottom: 15px;
+}
+
+.form-contents {
+  display: inline-grid;
+  padding: 0 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;  
+  text-align: center;
+}
 
 h1 {
   margin: 0;
   text-align: left;
   margin-left: 15px;
   padding-top: 10px;
+  font-family: 'Poppins', sans-serif;  
 }
 
 .App-link {

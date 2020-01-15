@@ -112,6 +112,19 @@ class App extends Component {
     }
   }
 
+  async checkOwner() {
+    let { accounts, contract } = this.state;
+    console.log(accounts[0])
+    console.log(contract.methods)
+    try {
+      let owner = await contract.methods.getOwner().call({ from: accounts[0] });
+      return owner === accounts[0];
+    }
+    catch (ex) {
+      console.log(ex)
+    }
+  }
+
   payLoanDeposit = async () => {
     let { accounts, contract, requiredDeposit, loanId } = this.state;
     const depositAmount = web3.utils.toWei(this.state.amount);
@@ -181,7 +194,11 @@ class App extends Component {
      
         <div>This Loan has an ID of: {this.state.loanId}</div>
     
-        <Button className="Retrieve-butt" onClick={this.handleRetrieveLoans} variant="contained" color="">
+        <Button 
+        className="Retrieve-butt"
+        onClick={this.handleRetrieveLoans}
+        variant="contained"
+        color="">
         Retrieve Loan
         </Button>
         <div>
@@ -194,66 +211,46 @@ class App extends Component {
         </div>
   
         <Table bordered responsive className="x">
-                <thead>
-                  <tr>
-                    <th>Loan Details</th>
-                    <th>Values</th>
-                  </tr>
-                </thead>
-               
-                <tbody>
-                  <tr>
-                    <td>Full Loan Amount:</td>
-                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.fullAmount) : null}</td>
-                  </tr>
-                  <tr>
-                    <td>Interest :</td>
-                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.interest) : null}</td>
-                  </tr>
-                  <tr>
-                    <td>Borrower :</td>
-                    <td>{this.state.currentLoan ? this.state.currentLoan.borrower : null}</td>
-                  </tr>
-                  <tr>
-                    <td>Lender :</td>
-                    <td>{this.state.currentLoan ? this.state.currentLoan.lender : null}</td>
-                  </tr>
-                  <tr>
-                    <td>Deposit Required :</td>
-                    <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.requiredDeposit) : null}</td>
-                  </tr>
-                  <tr>
-                    <td>Loan Status :</td>
-                    <td>{this.state.currentLoan ? this.state.status[this.state.currentLoan.status] : null}</td>
-                  </tr>
-                </tbody>
+          <thead>
+            <tr>
+              <th>Loan Details</th>
+              <th>Values</th>
+            </tr>
+          </thead> 
+          <tbody>
+            <tr>
+              <td>Full Loan Amount:</td>
+              <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.fullAmount) : null}</td>
+            </tr>
+            <tr>
+              <td>Interest :</td>
+              <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.interest) : null}</td>
+            </tr>
+            <tr>
+              <td>Borrower :</td>
+              <td>{this.state.currentLoan ? this.state.currentLoan.borrower : null}</td>
+            </tr>
+            <tr>
+              <td>Lender :</td>
+              <td>{this.state.currentLoan ? this.state.currentLoan.lender : null}</td>
+            </tr>
+            <tr>
+              <td>Deposit Required :</td>
+              <td>{this.state.currentLoan ? web3.utils.fromWei(this.state.currentLoan.requiredDeposit) : null}</td>
+            </tr>
+            <tr>
+              <td>Loan Status :</td>
+              <td>{this.state.currentLoan ? this.state.status[this.state.currentLoan.status] : null}</td>
+            </tr>
+          </tbody>
         </Table>
-        <br></br>
-        <Button onClick={this.payLoanDeposit} variant="contained" color="">
+
+        <Button 
+        className="payDeposit-butt"
+        onClick={this.payLoanDeposit} variant="contained" 
+        color="">
         Pay Deposit
         </Button>
-        {/* <div><button >Pay Deposit</button></div> */}
-        <div>
-        <br></br>
-          <input
-            name="amount"
-            className="form-control"
-            id="amount"
-            onChange={this.handleInput}
-          />
-        </div>
-        <br></br>
-        <Button onClick={this.handleRetrieveFunds} variant="contained" color="primary">
-        Retrieve Funds
-        </Button>
-        <br></br>
-        <br></br>
-        <br></br>
-        <Button  onClick={this.payBackLoan} variant="contained" color="">
-        Pay Off Loan
-        </Button>
-        <br></br>
-        <br></br>
         <div>
           <input
             name="amount"
@@ -263,9 +260,32 @@ class App extends Component {
           />
         </div>
 
-      <form>
-        <div className="create-loan-form">
+        <Button
+        className="retrieveFunds-butt" 
+        onClick={this.handleRetrieveFunds} 
+        variant="contained" 
+        color="primary">
+        Retrieve Funds
+        </Button>
+
+        <Button  onClick={this.payBackLoan} variant="contained" color="">
+        Pay Off Loan
+        </Button>
+
+        <div>
+          <input
+            name="amount"
+            className="form-control"
+            id="payLoan"
+            onChange={this.handleInput}
+          />
+        </div>
+
+      <form className="create-loan-form">
+        <div className="form-contents">
           <h1>Create a Loan</h1>
+          <hr></hr>
+
           <label htmlFor="interest">Interest Amount</label>
           <input
             autoComplete="off"
