@@ -16,6 +16,7 @@ class App extends Component {
     super(props)
     this.state = {
       status: ['PENDING', 'ACTIVE', 'RESOLVED'],
+      transactionObjects: [],
       web3: null,
       currentLoan: null,
       accounts: null,
@@ -99,10 +100,18 @@ class App extends Component {
       from: accounts[0],
       value: etherAmount
     })
+    // let transactionObjects = [...this.state.transactionObjects];
+    // transactionObjects.push(tx);
+    // this.setState({transactionObjects})
+    this.setState({ 
+      transactionHash : tx.transactionHash,
+      blockNumber : tx.blockNumber,
+      gasUsed : tx.gasUsed
+    })
+    console.log(tx);
     }
     catch (ex) {
-      console.log(tx);
-
+    
     }
   }
 
@@ -156,11 +165,12 @@ class App extends Component {
     console.log(event.target.value)
     this.setState({ [event.target.name]: event.target.value });
   };
-
+  //0x41fafFaa11a9b57858ceeF3d371A55dde9ef764f
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
+    console.log(this.state.transactionObjects)
     return (
       <div className="App">
         <h2>Smart Contract Example</h2>
