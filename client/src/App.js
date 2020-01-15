@@ -172,21 +172,17 @@ class App extends Component {
     console.log(this.state.transactionObjects)
     return (
       <div className="App">
-        <h2>Loan Machine</h2>
-        <h4>Built on Smart Contracts</h4>
+        <div className="Loan-app-header">
+        <h1>LOANR</h1>
+        <p class="line-1 anim-typewriter">Built on Ethereum smart contracts</p>
         <span>Account: {this.state.accounts ? this.state.accounts : null }</span>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
+        </div>
+     
         <div>This Loan has an ID of: {this.state.loanId}</div>
-        <br></br>
-        <Button onClick={this.handleRetrieveLoans} variant="contained" color="">
+    
+        <Button className="Retrieve-butt" onClick={this.handleRetrieveLoans} variant="contained" color="">
         Retrieve Loan
         </Button>
-        <br></br>
-        <br></br>
         <div>
           <input
             name="loanId"
@@ -199,7 +195,7 @@ class App extends Component {
         <Table bordered responsive className="x">
                 <thead>
                   <tr>
-                    <th>Loan Details:</th>
+                    <th>Loan Details</th>
                     <th>Values</th>
                   </tr>
                 </thead>
@@ -246,7 +242,7 @@ class App extends Component {
           />
         </div>
         <br></br>
-        <Button onClick={this.handleRetrieveFunds} variant="contained" color="">
+        <Button onClick={this.handleRetrieveFunds} variant="contained" color="primary">
         Retrieve Funds
         </Button>
         <br></br>
@@ -265,11 +261,11 @@ class App extends Component {
             onChange={this.handleInput}
           />
         </div>
+
       <form>
-        <div className="form-group">
+        <div className="create-loan-form">
           <h1>Create a Loan</h1>
           <label htmlFor="interest">Interest Amount</label>
-          <br></br>
           <input
             autoComplete="off"
             name="interest"
@@ -277,12 +273,7 @@ class App extends Component {
             id="interest"
             onChange={this.handleInput}
           />
-           <br></br>
-        </div>
-        <br></br>
-        <div className="form-group">
           <label htmlFor="borrower">Borrower</label>
-          <br></br>
           <input
             autoComplete="off"
             name="borrower"
@@ -290,12 +281,7 @@ class App extends Component {
             id="borrower"
             onChange={this.handleInput}
           />
-           <br></br>
-        </div>
-        <br></br>
-        <div className="form-group">
           <label htmlFor="depositPercentage">Deposit Percentage (%)</label>
-          <br></br>
           <input
             autoComplete="off"
             name="depositPercentage"
@@ -303,12 +289,7 @@ class App extends Component {
             id="depositPercentage"
             onChange={this.handleInput}
           />
-           <br></br>
-        </div>
-        <br></br>
-        <div className="form-group">
           <label htmlFor="amount">Value of the Loan</label>
-          <br></br>
           <input
             autoComplete="off"
             name="amount"
@@ -316,19 +297,13 @@ class App extends Component {
             id="amount"
             onChange={this.handleInput}
           />
-           <br></br>
         </div>
-      
-        <br></br>
-        {/* <button onClick={this.handleCreate}>Create</button> */}
       </form>
+
       <Button onClick={this.createLoan} variant="contained" color="">
       Create
       </Button>
-
-          <br></br>
-          <br></br>
-          <br></br>
+      
       <Container>
         <Table bordered responsive className="txReceipt-table">
                 <thead>
@@ -355,11 +330,9 @@ class App extends Component {
 
                 </tbody>
         </Table>
-        <br></br>
-        <br></br>
-      <Button onClick = {this.getLoanTxDetails}> Transaction Receipt </Button>
-      <br></br>
-      <br></br>
+
+      <Button className="txReceipt-button" onClick = {this.getLoanTxDetails}> Transaction Receipt </Button>
+
       </Container>
       </div>
     );

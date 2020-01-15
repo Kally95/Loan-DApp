@@ -6,6 +6,50 @@
   height: 40vmin;
 }
 
+.Loan-app-header {
+  margin-bottom: 40px;
+}
+
+.Retrieve-butt {
+  margin: 10px !important;
+}
+
+.Loan-app-header {
+  background: #8E2DE2;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #4A00E0, #8E2DE2);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #4A00E0, #8E2DE2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  height: 150px;
+  color: white;
+}
+
+.line-1{
+  position: relative;
+  top: 50%;  
+  width: 15em;
+  margin: 0 auto;
+  border-right: 2px solid rgba(255,255,255,.75);
+  font-size: 100%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  transform: translateY(-50%);  
+  font-family: 'Poppins', sans-serif;;  
+}
+
+/* Animation */
+.anim-typewriter{
+animation: typewriter 4s steps(44) 1s 1 normal both,
+           blinkTextCursor 500ms steps(44) infinite normal;
+}
+@keyframes typewriter{
+from{width: 0;}
+to{width: 17em;}
+}
+@keyframes blinkTextCursor{
+from{border-right-color: rgba(255,255,255,.75);}
+to{border-right-color: transparent;}
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -17,8 +61,30 @@
   color: white;
 }
 
+h1 {
+  margin: 0;
+  text-align: left;
+  margin-left: 15px;
+  padding-top: 10px;
+}
+
 .App-link {
   color: #09d3ac;
+}
+
+.txReceipt-button {
+  margin: 30px !important;
+}
+
+.create-loan-form {
+  display: grid;
+  width: 300px;
+  text-align: left;
+  margin: 0 auto;
+}
+
+.form-control {
+  margin-bottom: 10px;
 }
 
 .txReceipt-table {
@@ -64,7 +130,7 @@ table.x thead {
 table.x thead th {
   font-size: 15px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: rgb(0, 0, 0);
 }
 table.x tfoot {
   font-size: 14px;
