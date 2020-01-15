@@ -166,6 +166,7 @@ h1 {
   margin: 0 auto;
 }
 table.x {
+  margin-bottom: 15px;
   border: 1px solid #A4A4A4;
   width: 100%;
   text-align: left;

@@ -253,6 +253,7 @@ class App extends Component {
         </Button>
         <div>
           <input
+            autoComplete="off"
             name="amount"
             className="form-control"
             id="amount"
@@ -274,6 +275,7 @@ class App extends Component {
 
         <div>
           <input
+            autoComplete="off"
             name="amount"
             className="form-control"
             id="payLoan"
