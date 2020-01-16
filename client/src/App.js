@@ -30,7 +30,8 @@ class App extends Component {
       blockNumber:'',
       transactionHash:'',
       gasUsed:'',
-      txReceipt: ''
+      txReceipt: '',
+      shouldShowButton: false
     };
   }
 
@@ -54,7 +55,7 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance });
+      this.setState({ web3, accounts, contract: instance }, () => {this.checkOwner()});
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -118,6 +119,9 @@ class App extends Component {
     console.log(contract.methods)
     try {
       let owner = await contract.methods.getOwner().call({ from: accounts[0] });
+      if (owner === accounts[0]) {
+      this.setState({ shouldShowButton : true });
+      }
       return owner === accounts[0];
     }
     catch (ex) {
@@ -167,7 +171,6 @@ class App extends Component {
     console.log(currentLoan)
     console.log(web3.utils.fromWei(currentLoan.fullAmount));
     this.setState({ currentLoan });
-
   };
 
   handleInput = (event) => {
@@ -175,8 +178,22 @@ class App extends Component {
     console.log(event.target.value)
     this.setState({ [event.target.name]: event.target.value });
   };
- 
+
+  handleStop = async () => {
+    let { contract, accounts } = this.state;
+    await contract.methods.stop().call({from: accounts[0]})
+  }
+
+  handleKill = async () => {
+    let { contract, accounts } = this.state;
+    await contract.methods.kill().call({from: accounts[0]})
+  }
   
+  handleResume = async () => {
+    let { contract, accounts } = this.state;
+    await contract.methods.resume().call({from: accounts[0]})
+  }
+
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
@@ -191,9 +208,43 @@ class App extends Component {
         <p class="line-1 anim-typewriter">Built on Ethereum smart contracts</p>
         <span className="account-address">Account: {this.state.accounts ? this.state.accounts : null }</span>
         </div>
-     
+        
         <div>This Loan has an ID of: {this.state.loanId}</div>
-    
+        
+        <div className="owner-special-buttons">
+          <h6>Owner Panel</h6>
+        {/* {this.state.shouldShowButton && 
+          <Button 
+          color="primary"
+          onClick={this.handleStop}
+          >
+          STOP CONTRACT
+          </Button>
+        }
+        {this.state.shouldShowButton &&
+          <Button 
+          color="primary"
+          onClick={this.handleResume}
+          >
+          RESUME CONTRACT
+          </Button>
+        }
+        {this.state.shouldShowButton &&
+          <Button 
+          color="secondary"
+          >
+          KILL CONTRACT
+          </Button>
+        } */}
+        {this.state.shouldShowButton && 
+
+          <Button color="secondary" onClick={this.handleStop}>Stop contract</Button>
+          <Button color="secondary" onClick={this.handleResume}>Resume</Button>
+          <Button color="secondary">Secondary</Button>
+
+        }
+        </div>
+
         <Button 
         className="Retrieve-butt"
         onClick={this.handleRetrieveLoans}

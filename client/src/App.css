@@ -22,6 +22,18 @@
   color: white;
 }
 
+.owner-special-buttons{
+  border: black solid 0.5px;
+  padding: 15px;
+  width: 309px;
+  margin: 20px auto;
+}
+
+h6 {
+  margin: 0;
+  padding-bottom: 5px;
+}
+
 .payDeposit-butt {
   margin: 10px !important;
 }
@@ -48,6 +60,12 @@
   transform: translateY(-50%);  
   font-family: 'Poppins', sans-serif;  
 }
+
+.MuiButton-label {
+  font-family: 'Poppins', sans-serif !important; 
+
+}
+
 .account-address {
   position: relative;
   top: -171px;
