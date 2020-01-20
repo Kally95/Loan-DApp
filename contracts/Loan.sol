@@ -1,6 +1,7 @@
 pragma solidity >=0.5.0 <0.6.0;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+// import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol";
 import "./Stoppable.sol";
 
 contract Loan is Stoppable {
@@ -31,6 +32,7 @@ contract Loan is Stoppable {
     event LogDeposit(address indexed _borrower, uint indexed _depositAmount);
     event LogRetrieved(uint indexed _loanID, address indexed _borrower, uint indexed _amountRetrieved);
     event LogPaid(address indexed _borrower, uint indexed _loanID, uint indexed _paidBack);
+    event LogKilledWithdraw(address indexed owner, uint indexed contractAmount);
 
     mapping(uint256 => Loans) public loans;
 
@@ -143,6 +145,17 @@ contract Loan is Stoppable {
         status = uint(loans[_loanId].status);
         requiredDeposit = loans[_loanId].requiredDeposit;
         return (fullAmount, amount, interest, lender, borrower, status, requiredDeposit);
+    }
+
+    function withdrawWhenKilled()
+    whenKilled
+    onlyOwner
+    public
+    {
+        require(address(this).balance > 0, "Error: The contract is empty");
+        (bool success, ) = msg.sender.call.value(address(this).balance)("");
+        require(success, "Error: Transfer failed.");
+        emit LogKilledWithdraw(msg.sender, address(this).balance);
     }
 }
 

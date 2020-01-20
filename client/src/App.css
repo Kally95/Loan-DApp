@@ -85,10 +85,12 @@ to{border-right-color: transparent;}
 }
 
 .header-img {
-    height: 100px;
+    height: 89px;
     width: 100px;
     position: relative;
     bottom: -36px;
+    background-color: white;
+    border-radius: 85%;
 }
 
 .App-header {

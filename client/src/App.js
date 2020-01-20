@@ -209,11 +209,11 @@ class App extends Component {
         <span className="account-address">Account: {this.state.accounts ? this.state.accounts : null }</span>
         </div>
         
-        <div>This Loan has an ID of: {this.state.loanId}</div>
+        
         
         <div className="owner-special-buttons">
           <h6>Owner Panel</h6>
-        {/* {this.state.shouldShowButton && 
+        {this.state.shouldShowButton && 
           <Button 
           color="primary"
           onClick={this.handleStop}
@@ -235,16 +235,9 @@ class App extends Component {
           >
           KILL CONTRACT
           </Button>
-        } */}
-        {this.state.shouldShowButton && 
-
-          <Button color="secondary" onClick={this.handleStop}>Stop contract</Button>
-          <Button color="secondary" onClick={this.handleResume}>Resume</Button>
-          <Button color="secondary">Secondary</Button>
-
         }
         </div>
-
+        <div>This Loan has an ID of: {this.state.loanId}</div>
         <Button 
         className="Retrieve-butt"
         onClick={this.handleRetrieveLoans}
