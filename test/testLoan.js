@@ -42,7 +42,7 @@ contract("Loan", (accounts) => {
 
       assert.isTrue(
         CreateLoanResult.receipt.status,
-         "Status is false"
+        "Status is false"
       );
 
       assert.strictEqual(
@@ -139,306 +139,281 @@ contract("Loan", (accounts) => {
         interest,
         borrower,
         depositPercentage,
-        {from: owner, value: amount}));
+        {from: owner, value: amount})
+      );
+    
+    });
+
+  });
+
+  describe("Testing payLoanDeposit()", () => {
+
+    it("Should pay a loan deposit and retrieve funds", async () => {
+
+      const CreateLoanResult = await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("10", "ether")});
+      
+      assert.isTrue(
+        CreateLoanResult.receipt.status,
+        "Status is false"
+      );
+
+      const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+
+      assert.strictEqual(
+        retrievedLoan.status.toString(10),
+        "0",
+        "Loan status is not PENDING"
+      );
+
+      assert.strictEqual(
+          retrievedLoan.requiredDeposit.toString(10),
+          "2500000000000000000",
+          "Did not calculate 25% of 20 correctly"
+      );
+
+      assert.strictEqual(
+        retrievedLoan.fullAmount.toString(10),
+        "15000000000000000000",
+        "Full amount of loan is incorrect"
+      );
+
+      assert.strictEqual(
+        CreateLoanResult.receipt.logs[0].args._loanId.toString(10),
+        "1",
+        "loanId counter did not increment"
+      );
+        
+      const paidDeposit = await contractInstance
+      .payLoanDeposit(
+        1, 
+        {from: borrower, value: toWei("2.5", "ether")}
+      );
+
+      assert.strictEqual(
+        paidDeposit.receipt.status,
+        true,
+        "Status is false"
+      );
+
+      assert.strictEqual(
+        paidDeposit.receipt.logs[0].event,
+        "LogDeposit",
+        "Event was not emitted correctly"
+      );
+      
+      assert.strictEqual(
+        paidDeposit.receipt.logs[0].args.__length__.toString(10),
+        "2",
+        "Should expect 2 events to be emitted"
+      );
+
+      const retrieveTx = await contractInstance
+      .retrieveLoanFunds(
+        1, 
+        {from: borrower}
+      )
+
+      assert.strictEqual(
+        retrieveTx.receipt.status,
+        true,
+        "withdraw event was not true"
+      );
+
+      assert.strictEqual(
+        retrieveTx.receipt.logs[0].event,
+        "LogRetrieved",
+        "Event was not emitted correctly" 
+      );
+
+      const confirmState = await contractInstance.retrieveLoans(1, {from: owner});
+
+      assert.strictEqual(
+        confirmState.status.toString(10),
+        "1",
+        "Loan status is not ACTIVE"
+      );
 
     });
 
+  });
 
-    describe("Testing payLoanDeposit()", () => {
+  describe("Testing retrieveLoanFunds() failures", () => {
 
-      it("Should pay a loan deposit and retrieve funds", async () => {
+    it("Should throw if retrieveLoanFunds() called prematurely", async () => {
+      
+      // Create a Loan
+      const CreateLoanResult = await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("20", "ether")});
+      
+      assert.isTrue(
+        CreateLoanResult.receipt.status,
+        "Status is false"
+      );
 
-        // Create a Loan
-        const CreateLoanResult = await contractInstance.createLoan(
-          interest,
-          borrower,
-          depositPercentage,
-          {from: owner, value: toWei("20", "ether")});
+      const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+
+      await utils.shouldThrow(
+        contractInstance
+        .retrieveLoanFunds
+        (1, {from: borrower})
+      );
+    });
+
+    it("Should throw if retrieveFunds() is called by non-borrower address", async () => {
+
+      const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+      
+      await utils
+      .shouldThrow(
+        contractInstance
+        .retrieveLoanFunds(1, {from: recipient2 })
+      )
+
+    });
+
+  });   
+
+  describe("Testing payBackLoan()", () => {
+
+    it("Should successfully pay back a loan", async () => {
+
+      const CreateLoanResult = await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("10", "ether")}
+      );
+      
+      assert.isTrue(
+        CreateLoanResult.receipt.status,
+        "Status is false"
+        );
         
-        assert.isTrue(
-          CreateLoanResult.receipt.status,
-          "Status is false"
-        );
-       // After the Loan is made the balance drops down the 79 including gas fees
-
-        const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
-        // console.log(retrievedLoan.fullAmount.toString(10))
-        assert.strictEqual(
-          retrievedLoan.status.toString(10),
-          "0",
-          "Loan status is not PENDING"
-        );
-
-        assert.strictEqual(
-           retrievedLoan.requiredDeposit.toString(10),
-           "5000000000000000000",
-           "Did not calculate 25% of 20 correctly"
-        );
-
-        assert.strictEqual(
-          retrievedLoan.fullAmount.toString(10),
-          "25000000000000000000",
-          "Full amount of loan is incorrect"
-        );
-
-        assert.strictEqual(
-          CreateLoanResult.receipt.logs[0].args._loanId.toString(10),
-          "1",
-          "loanId counter did not increment"
-        );
+      await contractInstance.retrieveLoans(
+          1,
+          {from: owner}
+          );
           
-        // Pay loan deposit with borrower address
-        const paidDeposit = await contractInstance.payLoanDeposit(1, {from: borrower, value: toWei("5", "ether")})
-        // console.log(paidDeposit)
+          //console.log(CreateLoanResult)
+      // console.log(new BN(x.fullAmount))
+      await contractInstance.payLoanDeposit(
+        1, 
+        {from: borrower, value: toWei("2.5", "ether")}
+      );
 
-        assert.strictEqual(
-          paidDeposit.receipt.status,
+      await contractInstance.retrieveLoanFunds(
+        1,
+        {from: borrower}
+      );
+      
+      await contractInstance.retrieveLoans(
+        1,
+        {from: owner}
+      );
+        
+      const txReceipt = await contractInstance.payBackLoan(
+          1,
+        {from: borrower, value: toWei("12.5", "ether")}
+      );
+      
+        assert.isTrue(
+          txReceipt.receipt.status,
           true,
-          "Status is false"
-        );
-
+          "Satus is false"
+        )
         assert.strictEqual(
-          paidDeposit.receipt.logs[0].event,
-          "LogDeposit",
+          txReceipt.receipt.logs[0].event,
+          "LogPaid",
           "Event was not emitted correctly"
-        );
-        
+        )
         assert.strictEqual(
-          paidDeposit.receipt.logs[0].args.__length__.toString(10),
+          txReceipt.receipt.logs[0].args._paidBack.toString(10),
+          "12500000000000000000",
+          "Loan was not paid back"
+        )
+        assert.strictEqual(
+          txReceipt.receipt.logs[0].args.__length__,
+          3,
+          "Should expect 3 events to be emitted"
+        )
+        const statusCheck = await contractInstance.retrieveLoans(
+          1,
+          {from: owner}
+        )
+        assert.strictEqual(
+          statusCheck.status.toString(10),
           "2",
-          "Should expect 2 events to be emitted"
+          "Loan status is not RESOLVED"
         );
         
-        // const balanceBefore = new BN(await web3.eth.getBalance(borrower))
-
-        const retrieveTx = await contractInstance.retrieveLoanFunds(1, {from: borrower})
-
-        // console.log(retrieveTx)
-
-        assert.strictEqual(
-          retrieveTx.receipt.status,
-          true,
-          "withdraw event was not true"
-        );
-
-        assert.strictEqual(
-          retrieveTx.receipt.logs[0].event,
-          "LogRetrieved",
-          "Event was not emitted correctly" 
-        );
-
-        const confirmState = await contractInstance.retrieveLoans(1, {from: owner});
-
-        // console.log(confirmState)
-
-        assert.strictEqual(
-          confirmState.status.toString(10),
-          "1",
-          "Loan status is not ACTIVE"
-        );
-
-        // Testing Tx Fee's
-        // const hash = retrieveTx.receipt.transactionHash;
-        // const tx = await web3.eth.getTransaction(hash);
-        // const gasUsed = retrieveTx.receipt.gasUsed;
-        // const gasPrice = tx.gasPRice;
-        // const txFee = new BN(gasUsed * gasPrice);
-        // const balanceNow = new BN(await web3.eth.getBalance(borrower));
-        // const receiveAmount = 20
-        // balanceAfter = await web3.eth.getBalance(borrower)
-        // assert.strictEqual(balanceAfter, balanceBefore + loanAmount, "fail")
-        // console.log(balance)
-        // Borrower retrieves funds from loan
-        // const retrieveFunds =  await contractInstance.retrieveLoanFunds.call(1, {from: borrower});
-        // assert.strictEqual(retrieveFunds, "Funds were not retrieved successfully");
-        // console.log(retrieveFunds)
-      });
     });
 
-    describe("Testing retrieveLoanFunds() failures", () => {
+  });
 
-      it("Should throw if retrieveLoanFunds() called prematurely", async () => {
-        
-        // Create a Loan
-        const CreateLoanResult = await contractInstance.createLoan(
-          interest,
-          borrower,
-          depositPercentage,
-          {from: owner, value: toWei("20", "ether")});
-        
-        assert.isTrue(
-          CreateLoanResult.receipt.status,
-          "Status is false"
-        );
+  describe("Testing retrieveLoans()", () => {
 
-        const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
+    it("Should successfully retrieve all loan values", async () => {
 
-        await utils.shouldThrow(
-          contractInstance
-          .retrieveLoanFunds
-          (1, {from: borrower})
-        );
+      const CreateLoanResult = await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("10", "ether")}
+      );
 
-        it("Should throw if retrieveFunds() is called by non-borrower address", async () => {
+      const loanResult = await contractInstance.retrieveLoans(
+        1,
+        {from: owner}
+      );
 
-          const retrievedLoan = await contractInstance.retrieveLoans(1, {from: owner});
-          
-          await utils
-          .shouldThrow(
-            contractInstance
-            .retrieveLoanFunds(1, {from: recipient2 })
-          )
+      assert.strictEqual(
+        loanResult.fullAmount.toString(10),
+        "15000000000000000000",
+        "Full amount of loan did not return"
+      );
 
-        });
+      assert.strictEqual(
+        loanResult.amount.toString(10),
+        "10000000000000000000",
+        "Amount did not return"
+      );
 
-      describe("Testing payBackLoan()", () => {
+      assert.strictEqual(
+        loanResult.interest.toString(10),
+        "5000000000000000000",
+        "Interest did not return"
+      );
 
-        it("Should successfully pay back a loan", async () => {
+      assert.strictEqual(
+        loanResult.lender,
+        owner,
+        "Lender address did not return"
+      );
 
-          await contractInstance.retrieveLoans(
-            1,
-            {from: owner}
-          );
-          
-          await contractInstance.payLoanDeposit(
-            1, 
-            {from: borrower, value: toWei("5", "ether")}
-          );
+      assert.strictEqual(
+        loanResult.borrower,
+        borrower,
+        "Borrower address did not return"
+      );
+      
+      assert.strictEqual(
+        loanResult.status.toString(10),
+        "0",
+        "Loan status did not return"
+      );
 
-          await contractInstance.retrieveLoanFunds(
-            1,
-            {from: borrower}
-          );
-
-          await contractInstance.retrieveLoans(
-            1,
-            {from: owner}
-          );
-
-          const txReceipt = await contractInstance.payBackLoan(
-            1,
-            {from: borrower, value: toWei("20", "ether")}
-          );
-
-          assert.isTrue(
-            txReceipt.receipt.status,
-            true,
-            "Satus is false"
-          );
-
-          assert.strictEqual(
-            txReceipt.receipt.logs[0].event,
-            "LogPaid",
-            "Event was not emitted correctly"
-          );
-
-          assert.strictEqual(
-            txReceipt.receipt.logs[0].args._paidBack.toString(10),
-            "20000000000000000000",
-            "Loan was not paid back"
-          );
-
-          assert.strictEqual(
-            txReceipt.receipt.logs[0].args.__length__,
-            3,
-            "Should expect 3 events to be emitted"
-          );
-
-          const statusCheck = await contractInstance.retrieveLoans(
-            1,
-            {from: owner}
-          );
-
-          assert.strictEqual(
-            statusCheck.status.toString(10),
-            "2",
-            "Loan status is not RESOLVED"
-          );
-
-        });
-
-      });
-
-      describe("Testing retrieveLoans()", () => {
-
-        it("Should successfully retrieve all loan values", async () => {
-
-          const loanResult = await contractInstance.retrieveLoans(
-            1,
-            {from: owner}
-          );
-
-          assert.strictEqual(
-            loanResult.fullAmount.toString(10),
-            "20000000000000000000",
-            "Full amount of loan did not return"
-          );
-
-          assert.strictEqual(
-            loanResult.amount.toString(10),
-            "0",
-            "Amount did not return"
-          );
-
-          assert.strictEqual(
-            loanResult.interest.toString(10),
-            "5000000000000000000",
-            "Interest did not return"
-          );
-
-          assert.strictEqual(
-            loanResult.lender,
-            owner,
-            "Lender address did not return"
-          );
-
-          assert.strictEqual(
-            loanResult.borrower,
-            borrower,
-            "Borrower address did not return"
-          );
-          
-          assert.strictEqual(
-            loanResult.status.toString(10),
-            "2",
-            "Loan status did not return"
-          );
-
-          assert.strictEqual(
-            loanResult.requiredDeposit.toString(10),
-            "5000000000000000000",
-            "Required deposit did not return"
-          );
-
-        });
-      });
-
-        // const startBalance = new BN(await web3.eth.getBalance(borrower, {from:owner}));
-
-        // const CreateLoanResult = await contractInstance.createLoan(
-        //   interest,
-        //   loanPeriod,
-        //   borrower,
-        //   depositPercentage,
-        //   {from: owner, value: toWei("20", "ether")});
-  
-        // // Pay loan deposit with borrower address
-        // const paidDeposit = await contractInstance.payLoanDeposit(1, {from: borrower, value: toWei("5", "ether")})
-        // assert.equal(paidDeposit.receipt.status, true, "Status is false");
-        // //console.log(paidDeposit)
-        // const retrieve = await contractInstance.retrieveLoanFunds.call(1, {from: borrower})
-
-
-        // const hash = txObj.receipt.transactionHash; // Get tx hash for gas used.
-        // const tx = await web3.eth.getTransaction(hash); //Returns a transaction matching the given transaction hash.
-        // const gasUsed = txObj.receipt.gasUsed;
-        // const gasPrice = tx.gasPrice;
-        // const txFee = new BN(gasUsed * gasPrice);
-        // const balanceNow = new BN(await web3.eth.getBalance(bob));        
-        // const receiveAmount = 500;
-  
-        // assert.equal(balanceNow.toString(10), startBalance.plus(receiveAmount).minus(txFee).toString(10), "Bob's balance did not return as intended");
-      });
+      assert.strictEqual(
+        loanResult.requiredDeposit.toString(10),
+        "2500000000000000000",
+        "Required deposit did not return"
+      );
 
     });
 
