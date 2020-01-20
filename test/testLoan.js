@@ -3,7 +3,7 @@ const BN = require('bignumber.js');
 const utils = require("./helpers/utils");
 
 contract("Loan", (accounts) => {
-
+  
   const amount = new BN(100);
   const [owner, recipient1, recipient2, recipient3] = accounts;
   const zeroAdd = 0x0000000000000000000000000000000000000000;
@@ -419,4 +419,51 @@ contract("Loan", (accounts) => {
 
   });
 
+  describe("Testing withdrawWhenKilled()", () => {
+    it.only("Should allow to withdrawWhenKilled after kill() is called", async () => {
+      const startBalance = new BN(await web3.eth.getBalance(owner))
+      //console.log(startBalance) //45777228779999999900
+
+      const retrieveTx = await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("10", "ether")}
+      );
+
+      const hash = retrieveTx.receipt.transactionHash;
+      const tx = await web3.eth.getTransaction(hash);
+      const gasUsed = retrieveTx.receipt.gasUsed;
+      const gasPrice = tx.gasPrice;
+      const txFee = new BN(gasUsed * gasPrice);
+      //console.log(results.receipt.logs[0].args)
+      //const balanceAfterCreation = await web3.eth.getBalance(owner)
+      //  console.log(results)
+      await contractInstance.stop({from: owner});
+      await contractInstance.kill({from: owner});
+      
+      const result = await contractInstance.withdrawWhenKilled({from: owner});
+      const balanceAfterKill = new BN(await web3.eth.getBalance(owner))
+
+      assert.strictEqual(
+        startBalance.toString(10),
+        balanceAfterKill.minus(txFee).toString(10),
+        "withdrawWhenKilled didn't execute as expected"
+      );
+
+      assert.strictEqual(
+        result.receipt.status,
+        true,
+        "Status is false"
+      );
+
+      assert.strictEqual(
+        result.receipt.logs[0].event,
+        "LogKilledWithdraw",
+        "Event was not emitted correctly"
+      );
+
+
+    });
+  });
 });
