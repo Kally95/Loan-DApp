@@ -141,9 +141,7 @@ contract("Loan", (accounts) => {
         depositPercentage,
         {from: owner, value: amount})
       );
-    
     });
-
   });
 
   describe("Testing payLoanDeposit()", () => {
@@ -170,14 +168,14 @@ contract("Loan", (accounts) => {
       );
 
       assert.strictEqual(
-          retrievedLoan.requiredDeposit.toString(10),
-          "2500000000000000000",
-          "Did not calculate 25% of 20 correctly"
+        web3.utils.fromWei(retrievedLoan.requiredDeposit.toString(10), "ether"),
+        "2.5",
+        "Did not calculate 25% of 20 correctly"
       );
 
       assert.strictEqual(
-        retrievedLoan.fullAmount.toString(10),
-        "15000000000000000000",
+        web3.utils.fromWei(retrievedLoan.fullAmount.toString(10), "ether"),
+        "15",
         "Full amount of loan is incorrect"
       );
 
@@ -236,9 +234,7 @@ contract("Loan", (accounts) => {
         "1",
         "Loan status is not ACTIVE"
       );
-
     });
-
   });
 
   describe("Testing retrieveLoanFunds() failures", () => {
@@ -277,7 +273,6 @@ contract("Loan", (accounts) => {
       )
 
     });
-
   });   
 
   describe("Testing payBackLoan()", () => {
@@ -334,8 +329,8 @@ contract("Loan", (accounts) => {
           "Event was not emitted correctly"
         )
         assert.strictEqual(
-          txReceipt.receipt.logs[0].args._paidBack.toString(10),
-          "12500000000000000000",
+          web3.utils.fromWei(txReceipt.receipt.logs[0].args._paidBack.toString(10), "ether"),      
+          "12.5",
           "Loan was not paid back"
         )
         assert.strictEqual(
@@ -351,10 +346,8 @@ contract("Loan", (accounts) => {
           statusCheck.status.toString(10),
           "2",
           "Loan status is not RESOLVED"
-        );
-        
+        ); 
     });
-
   });
 
   describe("Testing retrieveLoans()", () => {
@@ -374,20 +367,20 @@ contract("Loan", (accounts) => {
       );
 
       assert.strictEqual(
-        loanResult.fullAmount.toString(10),
-        "15000000000000000000",
+        web3.utils.fromWei(loanResult.fullAmount.toString(10), "ether"),
+        "15",
         "Full amount of loan did not return"
       );
 
       assert.strictEqual(
-        loanResult.amount.toString(10),
-        "10000000000000000000",
+        web3.utils.fromWei(loanResult.amount.toString(10), "ether"),
+        "10",
         "Amount did not return"
       );
 
       assert.strictEqual(
-        loanResult.interest.toString(10),
-        "5000000000000000000",
+        web3.utils.fromWei(loanResult.interest.toString(10), "ether"), 
+        "5",
         "Interest did not return"
       );
 
@@ -408,15 +401,13 @@ contract("Loan", (accounts) => {
         "0",
         "Loan status did not return"
       );
-
+      
       assert.strictEqual(
-        loanResult.requiredDeposit.toString(10),
-        "2500000000000000000",
+        web3.utils.fromWei(loanResult.requiredDeposit.toString(10), "ether"),
+        "2.5",
         "Required deposit did not return"
       );
-
     });
-
   });
 
   describe("Testing withdrawWhenKilled()", () => {
@@ -426,11 +417,10 @@ contract("Loan", (accounts) => {
     let gasPrice = new BN(0)
     let txFee = new BN(0)
     
-    it.only("Should allow to withdrawWhenKilled after kill() is called", async () => {
+    it("Should allow to withdrawWhenKilled after kill() is called", async () => {
       let getBal = await web3.eth.getBalance(owner);
       const startBalance = new BN(getBal)
-      console.log(web3.utils.fromWei(startBalance.toString(10), "ether")) //45777228779999999900
-
+      
       const retrieveTx = await contractInstance.createLoan(
         interest,
         borrower,
@@ -444,10 +434,6 @@ contract("Loan", (accounts) => {
       gasPrice = new BN(tx.gasPrice);
       txFee = gasUsed.times(gasPrice).plus(txFee);
       getBal = new BN(await web3.eth.getBalance(owner));
-      console.log(startBalance.minus(getBal).minus(txFee).toString(10))
-      //console.log(results.receipt.logs[0].args)
-      //const balanceAfterCreation = await web3.eth.getBalance(owner)
-      //  console.log(results)
 
       const stopResult = await contractInstance.stop({from: owner});
       hash = stopResult.receipt.transactionHash;
@@ -456,8 +442,6 @@ contract("Loan", (accounts) => {
       gasPrice = new BN(tx.gasPrice);
       txFee = gasUsed.times(gasPrice).plus(txFee);
       
-
-      //console.log(startBalance.minus(getBal).minus(txFee).toString(10))
       const killResult = await contractInstance.kill({from: owner});
       hash = killResult.receipt.transactionHash;
       tx = await web3.eth.getTransaction(hash);
@@ -465,7 +449,7 @@ contract("Loan", (accounts) => {
       gasPrice = new BN(tx.gasPrice);
       txFee = gasUsed.times(gasPrice).plus(txFee);
       getBal = new BN(await web3.eth.getBalance(owner));
-      console.log(startBalance.minus(getBal).minus(txFee).toString(10))
+
       const withdrawResult = await contractInstance.withdrawWhenKilled({from: owner});
       hash = withdrawResult.receipt.transactionHash;
       tx = await web3.eth.getTransaction(hash);
@@ -473,30 +457,28 @@ contract("Loan", (accounts) => {
       gasPrice = new BN(tx.gasPrice);
       txFee = gasUsed.times(gasPrice).plus(txFee);
       getBal = new BN(await web3.eth.getBalance(owner));
-      console.log(startBalance.minus(getBal).minus(txFee).toString(10))
+
       const balanceAfterKill = new BN(await web3.eth.getBalance(owner))
-      // console.log(balanceAfterKill)
-      let total = startBalance.minus(balanceAfterKill).minus(txFee).toString(10)
       
-      console.log(web3.utils.fromWei(total, "ether"))
-      // console.log(txFee1.toString(10), txFee.toString(10))
+      // let total = startBalance.minus(balanceAfterKill).minus(txFee).toString(10)
+
       assert.strictEqual(
         startBalance.toString(10),
         balanceAfterKill.plus(txFee).toString(10),
         "withdrawWhenKilled didn't execute as expected"
       );
     
-      // assert.strictEqual(
-      //   result.receipt.status,
-      //   true,
-      //   "Status is false"
-      // );
+      assert.strictEqual(
+        withdrawResult.receipt.logs[0].event,
+        'LogKilledWithdraw',
+        "Event was not emitted correctly"
+      );
 
-      // assert.strictEqual(
-      //   result.receipt.logs[0].event,
-      //   "LogKilledWithdraw",
-      //   "Event was not emitted correctly"
-      // );
+      assert.strictEqual(
+        withdrawResult.receipt.status,
+        true,
+        "Status is false"
+      );
 
     });
   });
