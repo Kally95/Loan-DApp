@@ -15704,6 +15704,26 @@
           "type": "event",
           "signature": "0xdd1d1672156846fdc9d6e65d5701535f177a41834051f5f7328be7f4252bcb31"
         },
+        "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "contractAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogKilledWithdraw",
+          "type": "event",
+          "signature": "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15"
+        },
         "0xe9f8c22c262ea6d87192756704ee1e94485d1875fda64d70aa43f13021c281ad": {
           "anonymous": false,
           "inputs": [
@@ -15723,6 +15743,32 @@
           "name": "LogLoanCreation",
           "type": "event",
           "signature": "0xe9f8c22c262ea6d87192756704ee1e94485d1875fda64d70aa43f13021c281ad"
+        },
+        "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_borrower",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_loanID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_paidBack",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogPaid",
+          "type": "event",
+          "signature": "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada"
         },
         "0x29560ba70e3537fccc61029db8de08e30408a3f131625765c51e3e972a7867ad": {
           "anonymous": false,
@@ -15791,61 +15837,15 @@
           "name": "OwnershipTransferred",
           "type": "event",
           "signature": "0x04dba622d284ed0014ee4b9a6a68386be1a4c08a4913ae272de89199cc686163"
-        },
-        "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "_borrower",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "_loanID",
-              "type": "uint256"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "_paidBack",
-              "type": "uint256"
-            }
-          ],
-          "name": "LogPaid",
-          "type": "event",
-          "signature": "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada"
-        },
-        "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "contractAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "LogKilledWithdraw",
-          "type": "event",
-          "signature": "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15"
         }
       },
       "links": {},
-      "address": "0xa37aC833756D2E2Dac4404cb06dFBdF780aF68C6",
-      "transactionHash": "0x819aea1a58afe8ade19a1f19f909303dc10676f02b53e632ac76ef9a8c861895"
+      "address": "0x0C9EAB67BA621ad501A5189b63Bc495552B57C88",
+      "transactionHash": "0x59ea4783fe3ed66eabf42ba0033084b12020b662bf12341ce6206bb1beaf79b8"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2020-01-22T14:33:28.487Z",
+  "updatedAt": "2020-01-22T16:23:31.304Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

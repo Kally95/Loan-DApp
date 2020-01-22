@@ -52,7 +52,7 @@ class App extends Component {
         Loan.abi,
         deployedNetwork && deployedNetwork.address,
       );
-
+      
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, () => {this.checkOwner()});
@@ -89,7 +89,7 @@ class App extends Component {
     console.log(etherAmount)
     let { accounts, contract, interest, borrower, depositPercentage, amount} = this.state;
     try{
-      console.log(borrower)
+      //console.log(borrower)
       tx = await contract.methods.createLoan(
       interestAmount,
       borrower,
@@ -106,10 +106,10 @@ class App extends Component {
       blockNumber : tx.blockNumber,
       gasUsed : tx.gasUsed
     })
-    console.log(tx);
+    //console.log(tx);
     }
     catch (ex) {
-    
+      console.log(ex)
     }
   }
 
@@ -169,7 +169,7 @@ class App extends Component {
     let { loanId, contract, accounts } = this.state;
     let currentLoan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
     console.log(currentLoan)
-    console.log(web3.utils.fromWei(currentLoan.fullAmount));
+    // console.log(web3.utils.fromWei(currentLoan.fullAmount));
     this.setState({ currentLoan });
   };
 
