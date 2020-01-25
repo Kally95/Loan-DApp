@@ -482,4 +482,29 @@ contract("Loan", (accounts) => {
 
     });
   });
+
+  describe("Testing withdrawWhenKilled() failures", () => {
+    it.only("Should throw if withdrawWhenKilled is called by non-owner", async () => {
+
+      await contractInstance.createLoan(
+        interest,
+        borrower,
+        depositPercentage,
+        {from: owner, value: toWei("1", "ether")}
+      );
+
+      await contractInstance.stop({from: owner});
+      await contractInstance.kill({from: owner});
+
+      await utils.shouldThrow(
+        contractInstance
+        .withdrawWhenKilled(
+        {from: accounts[5]}
+        )
+      );
+
+    });
+    
+  });
+    
 });

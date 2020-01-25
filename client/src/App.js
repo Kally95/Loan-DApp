@@ -90,14 +90,26 @@ class App extends Component {
     let { accounts, contract, interest, borrower, depositPercentage, amount} = this.state;
     try{
       //console.log(borrower)
-      tx = await contract.methods.createLoan(
+      let estimate = await contract.methods.createLoan(
+      interestAmount,
+      borrower,
+      depositPercentage
+    ).estimateGas({
+      from: accounts[0],
+      value: etherAmount
+    })
+
+    let tx = await contract.methods.createLoan(
       interestAmount,
       borrower,
       depositPercentage
     ).send({
       from: accounts[0],
-      value: etherAmount
+      value: etherAmount,
+      gasPrice: 2000000000,
+      gas: (estimate  * 2)
     })
+
     // let transactionObjects = [...this.state.transactionObjects];
     // transactionObjects.push(tx);
     // this.setState({transactionObjects})
@@ -169,7 +181,8 @@ class App extends Component {
     let { loanId, contract, accounts } = this.state;
     let currentLoan = await contract.methods.retrieveLoans(loanId).call({from: accounts[0]});
     console.log(currentLoan)
-    // console.log(web3.utils.fromWei(currentLoan.fullAmount));
+    console.log(loanId, accounts[0])
+    console.log(web3.utils.fromWei(currentLoan.fullAmount));
     this.setState({ currentLoan });
   };
 
@@ -181,24 +194,33 @@ class App extends Component {
 
   handleStop = async () => {
     let { contract, accounts } = this.state;
-    await contract.methods.stop().call({from: accounts[0]})
+    await contract.methods.stop().send({from: accounts[0]})
   }
 
   handleKill = async () => {
     let { contract, accounts } = this.state;
-    await contract.methods.kill().call({from: accounts[0]})
+    await contract.methods.kill().send({from: accounts[0]})
   }
   
   handleResume = async () => {
     let { contract, accounts } = this.state;
-    await contract.methods.resume().call({from: accounts[0]})
+    await contract.methods.resume().send({from: accounts[0]})
   }
 
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
-  
+    if (this.state.web3)  
+    {
+    this.state.contract.methods.getOwner()
+    .call()
+    .then(result => {
+    console.log("owner") 
+    console.log(result)
+    
+    })}
+    
     console.log(this.state.transactionObjects)
     return (
       <div className="App">
@@ -207,9 +229,7 @@ class App extends Component {
         <img className="header-img" src="https://cdn.iconscout.com/icon/free/png-256/ethereum-3-569581.png"/>
         <p class="line-1 anim-typewriter">Built on Ethereum smart contracts</p>
         <span className="account-address">Account: {this.state.accounts ? this.state.accounts : null }</span>
-        </div>
-        
-        
+        </div>        
         
         <div className="owner-special-buttons">
           <h6>Owner Panel</h6>
