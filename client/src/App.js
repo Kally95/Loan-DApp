@@ -68,8 +68,6 @@ class App extends Component {
 //Function to get the chain details of loan upon submitting the Loan. 
   getLoanTxDetails = async () => {
     try{
-      this.setState({blockNumber:"waiting.."});
-      this.setState({gasUsed:"waiting..."});
       await web3.eth.getTransactionReceipt(this.state.currentLoan, (err, txReceipt)=>{
       console.log(err,txReceipt);
       this.setState({txReceipt});
@@ -89,7 +87,6 @@ class App extends Component {
     console.log(etherAmount)
     let { accounts, contract, interest, borrower, depositPercentage, amount} = this.state;
     try{
-      //console.log(borrower)
       let estimate = await contract.methods.createLoan(
       interestAmount,
       borrower,
@@ -110,15 +107,13 @@ class App extends Component {
       gas: (estimate  * 2)
     })
 
-    // let transactionObjects = [...this.state.transactionObjects];
-    // transactionObjects.push(tx);
-    // this.setState({transactionObjects})
+
     this.setState({ 
       transactionHash : tx.transactionHash,
       blockNumber : tx.blockNumber,
       gasUsed : tx.gasUsed
     })
-    //console.log(tx);
+
     }
     catch (ex) {
       console.log(ex)
@@ -155,21 +150,16 @@ class App extends Component {
     }) } catch (err) {
       console.log(err)
     }
-    // Get requiredDeposit from Struct in Loan contract
   };
 
   payBackLoan = async () => {
     let { loanId, contract, accounts, fullAmount } = this.state;
     const payBackAmount = web3.utils.toWei(this.state.amount);
-    // const fullLoanAmount = web3.utils.toBN(fullAmount);
     await contract.methods
       .payBackLoan(loanId)
       .send({from: accounts[0], value: payBackAmount}); 
   };
   
-  // Retrieve funds is for the BORROWER to call
-  // in order to retrieve the funds deposited by
-  // the lender
   handleRetrieveFunds = async () => {
     let { loanId, contract, accounts } = this.state;
     await contract.methods
@@ -201,7 +191,12 @@ class App extends Component {
     let { contract, accounts } = this.state;
     await contract.methods.kill().send({from: accounts[0]})
   }
-  
+
+  handleWithdraw = async () => {
+    let { contract, accounts } = this.state;
+    await contract.methods.withdrawWhenKilled().send({from: accounts[0]})
+  }
+
   handleResume = async () => {
     let { contract, accounts } = this.state;
     await contract.methods.resume().send({from: accounts[0]})
@@ -250,13 +245,23 @@ class App extends Component {
           </Button>
         }
         {this.state.shouldShowButton &&
+          <Button
+            color="primary"
+            onClick={this.handleWithdraw}
+          >
+          WITHDRAW
+          </Button>
+        }
+        {this.state.shouldShowButton &&
           <Button 
           color="secondary"
+          onClick={this.handleKill}
           >
           KILL CONTRACT
           </Button>
         }
         </div>
+
         <div>This Loan has an ID of: {this.state.loanId}</div>
         <Button 
         className="Retrieve-butt"
@@ -418,9 +423,9 @@ class App extends Component {
                 </tbody>
         </Table>
 
-      <Button className="txReceipt-button" onClick = {this.getLoanTxDetails}> Transaction Receipt </Button>
 
       </Container>
+   
       </div>
     );
   }
