@@ -56,7 +56,7 @@ contract Loan is Stoppable {
         emit LogLoanCreation(msg.sender, loanId);
 
         uint256 depositPercentage = msg.value.mul(_depositPercentage).div(100);
-        uint256 fullAmount = msg.value + _interest;
+        uint256 fullAmount = msg.value.add(_interest);
 
         loans[loanId] = Loans({
             fullAmount: fullAmount,
