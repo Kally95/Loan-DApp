@@ -45,7 +45,7 @@ Ganache will default to a certain Port and IP address.  **We'll be using 8545**.
 
 >**Note:** Double check the RPC Address, Port and Network ID matching with the **truffle-config.js** file in the root directory. 
 >
->**Caution:** There may be a nonce sync issue thus you may need to reset the account if you run the ÐApp multiple time across different browser sessions. To do this click the MetaMask extension Icon ( 🦊) > click on the **colourful avatar** >  go to **settings** (⚙️) > click **Advanced** > finally, **Reset Accounts**. Also refresh the page so that these changes have been updated.
+>**⚠️ Caution:** There may be a nonce sync issue thus you may need to reset the account if you run the ÐApp multiple time across different browser sessions. To do this click the MetaMask extension Icon ( 🦊) > click on the **colourful avatar** >  go to **settings** (⚙️) > click **Advanced** > finally, **Reset Accounts**. Also refresh the page so that these changes have been updated.
 >
 
 ## Configuring MetaMask 🦊
