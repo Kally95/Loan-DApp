@@ -1,4 +1,4 @@
-// Add inline pic 
+ ![Loaner Home Page](/rand/Screenshot from 2020-01-28 14-12-41.png)|
 
 # LOANΞR 
 > Final Project for the Developers Program by **Consensys Academy**
