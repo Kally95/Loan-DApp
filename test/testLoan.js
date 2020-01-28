@@ -484,7 +484,7 @@ contract("Loan", (accounts) => {
   });
 
   describe("Testing withdrawWhenKilled() failures", () => {
-    it.only("Should throw if withdrawWhenKilled is called by non-owner", async () => {
+    it("Should throw if withdrawWhenKilled is called by non-owner", async () => {
 
       await contractInstance.createLoan(
         interest,
