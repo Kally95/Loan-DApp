@@ -62,6 +62,7 @@ Having configured your Truffle & Ganache settings correctly, you'll need to add 
 Use truffle to compile and deploy the main contract `Loan.sol`. This can be done by running the following commands in the root directory of the project:
 
 > $ truffle compile
+
 > $ truffle migrate
 
 Then `cd client` and execute `npm start` to boot up the front-end locally.
