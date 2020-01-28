@@ -1,4 +1,4 @@
- ![Loaner Home Page](/rand/image1.png)
+ ![Loaner Home Page](/rand/image2.png)
 
 # LOANΞR 
 > Final Project for the Developers Program by **Consensys Academy**
