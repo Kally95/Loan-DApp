@@ -70,7 +70,7 @@ Then `cd client` and execute `npm start` to boot up the front-end locally.
 To test with truffle you can execute the following command:
 > $ truffle test
 
-**insert picture**
+![Testing results](/rand/image1.png)
 
 There are a total of 14 tests, and in the time of writing, all pass. These tests can be found within the `test` folder under `testLoan.js`.
 ## LOANΞR functionality
