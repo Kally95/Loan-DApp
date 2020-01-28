@@ -31,7 +31,11 @@ class App extends Component {
       transactionHash:'',
       gasUsed:'',
       txReceipt: '',
-      shouldShowButton: false
+      shouldShowButton: false,
+      contractState: {
+        lastEventBlock: 0,
+        currentState: ''
+      }
     };
   }
 
@@ -55,8 +59,8 @@ class App extends Component {
       
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, () => {this.checkOwner()});
-      this.setState({ web3, accounts, })
+      this.setState({ web3, accounts, contract: instance }, () => {this.checkOwner(); this.checkEvent()});
+      
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -119,6 +123,48 @@ class App extends Component {
     catch (ex) {
       console.log(ex)
     }
+  }
+
+  checkEvent() {
+    let { contract, contractState } = this.state;
+    contract.events.LogStopped({
+    fromBlock: 0
+    }, 
+    (error, event) => {
+       console.log(event, contractState, 'Stopped');
+       this.setState(prevState => {
+        if (event.blockNumber > prevState.contractState.lastEventBlock) {
+            return {
+                ...prevState,
+                contractState: {
+                  lastEventBlock: event.blockNumber,
+                  currentState: 'Stopped'
+                }
+            }       
+        } else {
+          return prevState
+        }
+    })
+    })
+    contract.events.LogResumed({
+      fromBlock: 0
+      }, 
+      (error, event)=> {
+         console.log(event, contractState, 'Resumed');
+         this.setState(prevState => {
+          if (event.blockNumber > prevState.contractState.lastEventBlock) {
+              return {
+                  ...prevState,
+                  contractState: {
+                    lastEventBlock: event.blockNumber,
+                    currentState: 'Resumed'
+                  }
+              }       
+          } else {
+            return prevState
+          }
+       })
+      })
   }
 
   async checkOwner() {
@@ -216,7 +262,7 @@ class App extends Component {
     console.log(result)
     
     })}
-    
+    console.log('the state', this.state.contractState)
     console.log(this.state.transactionObjects)
     return (
       <div className="App">
@@ -229,7 +275,7 @@ class App extends Component {
         
         <div className="owner-special-buttons">
           <h6>Owner Panel</h6>
-        {this.state.shouldShowButton && 
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Stopped' &&
           <Button 
           color="primary"
           onClick={this.handleStop}
@@ -237,7 +283,7 @@ class App extends Component {
           STOP CONTRACT
           </Button>
         }
-        {this.state.shouldShowButton &&
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Resumed' &&
           <Button 
           color="primary"
           onClick={this.handleResume}
@@ -423,10 +469,7 @@ class App extends Component {
 
                 </tbody>
         </Table>
-
-
       </Container>
-   
       </div>
     );
   }
