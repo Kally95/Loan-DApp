@@ -325,7 +325,7 @@ class App extends Component {
             onChange={this.handleInput}
           />
         </div>
-  
+        <p>Contract Status: {this.state.contractState.currentState}</p>
         <Table bordered responsive className="x">
           <thead>
             <tr>
