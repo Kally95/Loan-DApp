@@ -131,41 +131,42 @@ class App extends Component {
     fromBlock: 0
     }, 
     (error, event) => {
-       console.log(event, contractState, 'Stopped');
-       this.setState(prevState => {
+      console.log(event, contractState, 'Stopped');
+      this.setState(prevState => {
+      if (event.blockNumber > prevState.contractState.lastEventBlock) {
+        return {
+          ...prevState,
+          contractState: {
+            lastEventBlock: event.blockNumber,
+            currentState: 'Stopped'
+          }
+        }       
+      } else {
+        return prevState
+      }
+    })
+  })
+  
+  contract.events.LogResumed({
+    fromBlock: 0
+    }, 
+    (error, event)=> {
+        console.log(event, contractState, 'Active');
+        this.setState(prevState => {
         if (event.blockNumber > prevState.contractState.lastEventBlock) {
             return {
                 ...prevState,
                 contractState: {
                   lastEventBlock: event.blockNumber,
-                  currentState: 'Stopped'
+                  currentState: 'Resumed'
                 }
             }       
         } else {
           return prevState
         }
-    })
-    })
-    contract.events.LogResumed({
-      fromBlock: 0
-      }, 
-      (error, event)=> {
-         console.log(event, contractState, 'Resumed');
-         this.setState(prevState => {
-          if (event.blockNumber > prevState.contractState.lastEventBlock) {
-              return {
-                  ...prevState,
-                  contractState: {
-                    lastEventBlock: event.blockNumber,
-                    currentState: 'Resumed'
-                  }
-              }       
-          } else {
-            return prevState
-          }
-       })
       })
-  }
+    })
+}
 
   async checkOwner() {
     let { accounts, contract } = this.state;
