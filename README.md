@@ -61,13 +61,12 @@ Having configured your Truffle & Ganache settings correctly, you'll need to add 
 ## Deployment
 >  Assuming you have set up all of the above correctly, with a test-net in the back running on port 8545, we can continue and deploy our main contract.
 >  
-Use truffle to compile and deploy the main contract `Loan.sol`. This can be done by running the following commands in the root directory of the project:
-
-> $ truffle compile
+Use truffle to migrate the main contract `Loan.sol`. This can be done by running the following commands in the root directory of the project:
 
 > $ truffle migrate
 
-Then `cd client` and execute `npm start` to boot up the front-end locally.
+Then we change into the client directory by executing `cd client` and install the neccessary modules.
+Having successfully installed everything within the client directory, we execute `npm start` to boot up the front-end locally.
 
 ##  Unit Tests
 To test with truffle you can execute the following command:
