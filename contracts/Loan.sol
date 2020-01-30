@@ -24,7 +24,6 @@ contract Loan is Stoppable {
         uint requiredDeposit;
     }
 
-    uint public loanCounter;
     uint public loanId;
 
     event LogLoanCreation(address indexed _lender, uint indexed _loanId);
@@ -50,7 +49,8 @@ contract Loan is Stoppable {
     whenRunning
     whenAlive
     returns(bool)
-    {
+    {   
+        require(_depositPercentage <= 100, "Deposit Percentage cannot exceed 100");
         require(_borrower != address(0x0), "Borrower's address cannot be 0");
         require(msg.value > 0, "Loan must have an associated Value");
         emit LogLoanCreation(msg.sender, loanId);
@@ -147,9 +147,9 @@ contract Loan is Stoppable {
     }
 
     function withdrawWhenKilled()
+    public
     whenKilled
     onlyOwner
-    public
     {
         require(address(this).balance > 0, "Error: The contract is empty");
         (bool success, ) = msg.sender.call.value(address(this).balance)("");

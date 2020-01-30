@@ -7,7 +7,6 @@ import web3 from "web3";
 
 import "./App.css";
 
-
 class App extends Component {
   constructor(props) {
     super(props)
@@ -16,6 +15,7 @@ class App extends Component {
       transactionObjects: [],
       web3: null,
       currentLoan: null,
+      currentLoanId: 1,
       accounts: null,
       contract: null,
       interest: null,
@@ -112,13 +112,12 @@ class App extends Component {
       gas: (estimate  * 2)
     })
 
-
     this.setState({ 
       transactionHash : tx.transactionHash,
       blockNumber : tx.blockNumber,
       gasUsed : tx.gasUsed
     })
-
+    this.handleLoanId()
     }
     catch (ex) {
       console.log(ex)
@@ -131,7 +130,6 @@ class App extends Component {
     fromBlock: 0
     }, 
     (error, event) => {
-      console.log(event, contractState, 'Stopped');
       this.setState(prevState => {
       if (event.blockNumber > prevState.contractState.lastEventBlock) {
         return {
@@ -151,40 +149,38 @@ class App extends Component {
     fromBlock: 0
     }, 
     (error, event)=> {
-        console.log(event, contractState, 'Active');
-        this.setState(prevState => {
-        if (event.blockNumber > prevState.contractState.lastEventBlock) {
-            return {
-                ...prevState,
-                contractState: {
-                  lastEventBlock: event.blockNumber,
-                  currentState: 'ACTIVE'
-                }
-            }       
-        } else {
-          return prevState
-        }
-      })
+      this.setState(prevState => {
+      if (event.blockNumber > prevState.contractState.lastEventBlock) {
+        return {
+          ...prevState,
+          contractState: {
+            lastEventBlock: event.blockNumber,
+            currentState: 'ACTIVE'
+          }
+        }       
+      } else {
+        return prevState
+      }
     })
+  })
   contract.events.LogKilled({
     fromBlock: 0
-    }, 
+  }, 
     (error, event)=> {
-        console.log(event, contractState, 'Killed');
-        this.setState(prevState => {
-        if (event.blockNumber > prevState.contractState.lastEventBlock) {
-            return {
-                ...prevState,
-                contractState: {
-                  lastEventBlock: event.blockNumber,
-                  currentState: 'KILLED'
-                }
-            }       
-        } else {
-          return prevState
-        }
-      })
+      this.setState(prevState => {
+      if (event.blockNumber > prevState.contractState.lastEventBlock) {
+        return {
+          ...prevState,
+          contractState: {
+            lastEventBlock: event.blockNumber,
+            currentState: 'KILLED'
+          }
+        }       
+      } else {
+        return prevState
+      }
     })
+  })
 }
 
   async checkOwner() {
@@ -269,6 +265,12 @@ class App extends Component {
     await contract.methods.resume().send({from: accounts[0]})
   }
 
+  handleLoanId = async () => {
+    let { contract, accounts } = this.state;
+    let x = await contract.methods.loanId().call({from: accounts[0]});
+    this.setState({ currentLoanId: x++ })
+  }
+
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
@@ -278,12 +280,8 @@ class App extends Component {
     this.state.contract.methods.getOwner()
     .call()
     .then(result => {
-    console.log("owner") 
-    console.log(result)
-    
     })}
-    console.log('the state', this.state.contractState)
-    console.log(this.state.transactionObjects)
+
     return (
       <div className="App">
         <div className="Loan-app-header">
@@ -336,7 +334,7 @@ class App extends Component {
         className="Retrieve-butt"
         onClick={this.handleRetrieveLoans}
         variant="contained"
-        color="">
+        color="default">
         Retrieve Loan
         </Button>
         <div>
@@ -386,7 +384,7 @@ class App extends Component {
         <Button 
         className="payDeposit-butt"
         onClick={this.payLoanDeposit} variant="contained" 
-        color="">
+        color="default">
         Pay Deposit
         </Button>
         <div>
@@ -458,7 +456,12 @@ class App extends Component {
             id="amount"
             onChange={this.handleInput}
           />
+          <div className="LoanId-info">
+            <p id="loanCounter"> Loan ID: {this.state.currentLoanId}</p>
+            <p id="loanCounterInfo">Loan ID's can be used to retrieve loans assigned the that ID</p>
+          </div>
         </div>
+        
       </form>
 
       <Button onClick={this.createLoan} variant="contained" color="">
@@ -466,30 +469,29 @@ class App extends Component {
       </Button>
       
       <Container>
-        <Table bordered responsive className="txReceipt-table">
-                <thead>
-                  <tr>
-                    <th>Tx Receipt Category</th>
-                    <th>Values</th>
-                  </tr>
-                </thead>
-               
-                <tbody>
-                  <tr>
-                    <td>Tx Hash :</td>
-                    <td>
-                      {this.state.transactionHash}</td>
-                  </tr>
-                  <tr>
-                    <td>Block Number :</td>
-                    <td>{this.state.blockNumber}</td>
-                  </tr>
-                  <tr>
-                    <td>Gas Used :</td>
-                    <td>{this.state.gasUsed}</td>
-                  </tr>
-
-                </tbody>
+        <Table bordered responsive className="x">
+            <thead>
+              <tr>
+                <th>Tx Receipt Category</th>
+                <th>Values</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <tr>
+                <td>Tx Hash :</td>
+                <td>
+                  {this.state.transactionHash}</td>
+              </tr>
+              <tr>
+                <td>Block Number :</td>
+                <td>{this.state.blockNumber}</td>
+              </tr>
+              <tr>
+                <td>Gas Used :</td>
+                <td>{this.state.gasUsed}</td>
+              </tr>
+            </tbody>
         </Table>
       </Container>
       </div>
