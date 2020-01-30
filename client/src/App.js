@@ -34,7 +34,7 @@ class App extends Component {
       shouldShowButton: false,
       contractState: {
         lastEventBlock: 0,
-        currentState: ''
+        currentState: 'ACTIVE'
       }
     };
   }
@@ -138,7 +138,7 @@ class App extends Component {
           ...prevState,
           contractState: {
             lastEventBlock: event.blockNumber,
-            currentState: 'Stopped'
+            currentState: 'STOPPED'
           }
         }       
       } else {
@@ -158,7 +158,7 @@ class App extends Component {
                 ...prevState,
                 contractState: {
                   lastEventBlock: event.blockNumber,
-                  currentState: 'Active'
+                  currentState: 'ACTIVE'
                 }
             }       
         } else {
@@ -295,8 +295,8 @@ class App extends Component {
         
         <div className="owner-special-buttons">
           <h6>Owner Panel</h6>
-        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Stopped' &&
-         this.state.contractState.currentState !== 'Killed' &&
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'STOPPED' &&
+         this.state.contractState.currentState !== 'KILLED' &&
           <Button 
           color="primary"
           onClick={this.handleStop}
@@ -304,8 +304,8 @@ class App extends Component {
           STOP CONTRACT
           </Button>
         }
-        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Resumed' &&
-         this.state.contractState.currentState !== 'Killed' &&
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'ACTIVE' &&
+         this.state.contractState.currentState !== 'KILLED' &&
           <Button 
           color="primary"
           onClick={this.handleResume}
@@ -321,7 +321,7 @@ class App extends Component {
           WITHDRAW
           </Button>
         }
-        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Killed' &&
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'KILLED' &&
           <Button 
           color="secondary"
           onClick={this.handleKill}
