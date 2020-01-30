@@ -1,3 +1,4 @@
+
  ![Loaner Home Page](/rand/image2.png)
 
 # LOANΞR 
@@ -65,7 +66,9 @@ Use truffle to migrate the main contract `Loan.sol`. This can be done by running
 
 > $ truffle migrate
 
-Then we change into the client directory by executing `cd client` and install the neccessary modules.
+Then we change into the client directory by executing `cd client` and install the neccessary modules by executing the following command:
+> $ npm install
+>
 Having successfully installed everything within the client directory, we execute `npm start` to boot up the front-end locally.
 
 ##  Unit Tests
@@ -73,6 +76,8 @@ To test with truffle you can execute the following command:
 > $ truffle test
 
 ![Testing results](/rand/image1.png)
+
+> **Caution:** In the case that you receive an error stating that it  **`cannot find module 'bignumber.js'`**, it may be the case that you will have to run **`npm install bignumber.js`** In the root directory.
 
 There are a total of 14 tests, and in the time of writing, all pass. These tests can be found within the `test` folder under `testLoan.js`.
 ## LOANΞR functionality
