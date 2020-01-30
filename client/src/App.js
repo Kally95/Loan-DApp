@@ -59,7 +59,11 @@ class App extends Component {
       
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, () => {this.checkOwner(); this.checkEvent()});
+      this.setState({ web3, accounts, contract: instance }, () => {
+        this.checkOwner();
+        this.checkEvent();
+        this.handleLoanId();
+      });
       
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -86,7 +90,6 @@ class App extends Component {
   } 
 
   createLoan = async () => {
-    let tx;
     const etherAmount = web3.utils.toWei(this.state.amount);
     const interestAmount = web3.utils.toWei(this.state.interest);
     console.log(etherAmount)
@@ -268,7 +271,7 @@ class App extends Component {
   handleLoanId = async () => {
     let { contract, accounts } = this.state;
     let x = await contract.methods.loanId().call({from: accounts[0]});
-    this.setState({ currentLoanId: x++ })
+    this.setState({ currentLoanId: x})
   }
 
   render() {
