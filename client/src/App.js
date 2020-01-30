@@ -158,7 +158,26 @@ class App extends Component {
                 ...prevState,
                 contractState: {
                   lastEventBlock: event.blockNumber,
-                  currentState: 'Resumed'
+                  currentState: 'Active'
+                }
+            }       
+        } else {
+          return prevState
+        }
+      })
+    })
+  contract.events.LogKilled({
+    fromBlock: 0
+    }, 
+    (error, event)=> {
+        console.log(event, contractState, 'Killed');
+        this.setState(prevState => {
+        if (event.blockNumber > prevState.contractState.lastEventBlock) {
+            return {
+                ...prevState,
+                contractState: {
+                  lastEventBlock: event.blockNumber,
+                  currentState: 'KILLED'
                 }
             }       
         } else {
@@ -277,6 +296,7 @@ class App extends Component {
         <div className="owner-special-buttons">
           <h6>Owner Panel</h6>
         {this.state.shouldShowButton && this.state.contractState.currentState !== 'Stopped' &&
+         this.state.contractState.currentState !== 'Killed' &&
           <Button 
           color="primary"
           onClick={this.handleStop}
@@ -285,6 +305,7 @@ class App extends Component {
           </Button>
         }
         {this.state.shouldShowButton && this.state.contractState.currentState !== 'Resumed' &&
+         this.state.contractState.currentState !== 'Killed' &&
           <Button 
           color="primary"
           onClick={this.handleResume}
@@ -300,7 +321,7 @@ class App extends Component {
           WITHDRAW
           </Button>
         }
-        {this.state.shouldShowButton &&
+        {this.state.shouldShowButton && this.state.contractState.currentState !== 'Killed' &&
           <Button 
           color="secondary"
           onClick={this.handleKill}
