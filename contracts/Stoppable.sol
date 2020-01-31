@@ -12,6 +12,10 @@ contract Stoppable is Ownable {
     event LogResumed(address _owner);
     event LogKilled(address _killer);
 
+    /*
+    The constructor function instantiates the value
+    for the state variables stopped and killed to false.
+    */
     constructor()
     internal
     {
@@ -19,6 +23,12 @@ contract Stoppable is Ownable {
         killed = false;
     }
 
+    /*
+    This modifier checks if the contract is killed.
+    WithdrawWhenKilled() uses this modifier so that it
+    can only be called in the event that the contract
+    has been killed, and not before.
+    */
     modifier
     whenKilled()
     {
@@ -26,6 +36,11 @@ contract Stoppable is Ownable {
         _;
     }
 
+    /*
+    This modifier checks to see if the contract is alive,
+    as long as this is the case, functions will run as
+    expected.
+    */
     modifier
     whenAlive()
     {
@@ -33,6 +48,11 @@ contract Stoppable is Ownable {
         _;
     }
 
+    /*
+    This modifier checks to see if the contract has
+    been stopped or not. As long as whenRunning reamins
+    true, functions will run as expected.
+    */
     modifier
     whenRunning()
     {
@@ -40,6 +60,12 @@ contract Stoppable is Ownable {
         _;
     }
 
+    /*
+    This mofidier checks that the contract is paused.
+    Functions using this modifier may function when the
+    contracts state has been Stopped. Functions like Resume(),
+    and Kill() may be called during this state.
+    */
     modifier
     whenPaused()
     {
