@@ -62,9 +62,10 @@ contract Stoppable is Ownable {
 
     /*
     This mofidier checks that the contract is paused.
-    Functions using this modifier may function when the
-    contracts state has been Stopped. Functions like Resume(),
-    and Kill() may be called during this state.
+    Functions using this modifier may continue to function
+    when the contracts state has been Stopped.
+    Functions like Resume() and Kill() may be
+    called during this state.
     */
     modifier
     whenPaused()
@@ -73,6 +74,13 @@ contract Stoppable is Ownable {
         _;
     }
 
+    /*
+    This function allows the owner to freeze
+    the use of functions labelled with the whenRunning
+    modifier. In the case of an emergency where the use
+    of the DApp must be limited, this can be called by the
+    owner to limit damage and usage until the issue is resolved.
+    */
     function stop()
     public
     onlyOwner
@@ -83,6 +91,13 @@ contract Stoppable is Ownable {
         emit LogStopped(msg.sender);
     }
 
+    /*
+    This function allows the owner to resume
+    the use of functions that have been previously
+    stopped. In the case that things were resolved
+    in the time that the contract was stopped, we
+    can then resume the contract and have it run again.
+    */
     function resume()
     public
     onlyOwner
@@ -93,6 +108,16 @@ contract Stoppable is Ownable {
         emit LogResumed(msg.sender);
     }
 
+    /*
+    This function is a two step process to prevent
+    an irreversible mistake. This kill function
+    essentially puts the contract into an un-resumable
+    state, that when called, cannot be undone. For this
+    to successfully execute, the contract must be paused first.
+    The only function that can be utilised in the event of the
+    contract being killed is the withdrawWhenKilled function that
+    is only accessible to the owner.
+    */
     function kill()
     public
     onlyOwner
