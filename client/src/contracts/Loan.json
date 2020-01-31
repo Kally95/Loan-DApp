@@ -15873,6 +15873,181 @@
     "version": "0.5.12+commit.7709ece9.Emscripten.clang"
   },
   "networks": {
+    "3": {
+      "events": {
+        "0x1b851e1031ef35a238e6c67d0c7991162390df915f70eaf9098dbf0b175a6198": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_borrower",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_depositAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogDeposit",
+          "type": "event",
+          "signature": "0x1b851e1031ef35a238e6c67d0c7991162390df915f70eaf9098dbf0b175a6198"
+        },
+        "0xdd1d1672156846fdc9d6e65d5701535f177a41834051f5f7328be7f4252bcb31": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "_killer",
+              "type": "address"
+            }
+          ],
+          "name": "LogKilled",
+          "type": "event",
+          "signature": "0xdd1d1672156846fdc9d6e65d5701535f177a41834051f5f7328be7f4252bcb31"
+        },
+        "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "contractAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogKilledWithdraw",
+          "type": "event",
+          "signature": "0x528177d13e940a4046f20556c874626926405065674cbfe290eb1aae6ea44e15"
+        },
+        "0xe9f8c22c262ea6d87192756704ee1e94485d1875fda64d70aa43f13021c281ad": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_lender",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_loanId",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogLoanCreation",
+          "type": "event",
+          "signature": "0xe9f8c22c262ea6d87192756704ee1e94485d1875fda64d70aa43f13021c281ad"
+        },
+        "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_borrower",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_loanID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_paidBack",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogPaid",
+          "type": "event",
+          "signature": "0xf6a729c51ee4f70fe8ab76f78435ae19604ef1532842ac4ba1006a6fa85ebada"
+        },
+        "0x29560ba70e3537fccc61029db8de08e30408a3f131625765c51e3e972a7867ad": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "_owner",
+              "type": "address"
+            }
+          ],
+          "name": "LogResumed",
+          "type": "event",
+          "signature": "0x29560ba70e3537fccc61029db8de08e30408a3f131625765c51e3e972a7867ad"
+        },
+        "0x07fa76b09de7d490ab4ed35bf0365df1474b9d21891fc1cfdf1c26f725965dd4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_loanID",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_borrower",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "_amountRetrieved",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogRetrieved",
+          "type": "event",
+          "signature": "0x07fa76b09de7d490ab4ed35bf0365df1474b9d21891fc1cfdf1c26f725965dd4"
+        },
+        "0xae2ff8b88a09be6cc9de7aa5e8efc037af3dfdb611a1217f8c70fc50975b8a80": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "_owner",
+              "type": "address"
+            }
+          ],
+          "name": "LogStopped",
+          "type": "event",
+          "signature": "0xae2ff8b88a09be6cc9de7aa5e8efc037af3dfdb611a1217f8c70fc50975b8a80"
+        },
+        "0x04dba622d284ed0014ee4b9a6a68386be1a4c08a4913ae272de89199cc686163": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x04dba622d284ed0014ee4b9a6a68386be1a4c08a4913ae272de89199cc686163"
+        }
+      },
+      "links": {},
+      "address": "0x51Adf435de7F703dDb780B1E6C1A0C1E98E90435",
+      "transactionHash": "0x8a85b01df26e1f0324c76939fc411dea249ec557935ffd2ad24652ce002d6c23"
+    },
     "5777": {
       "events": {
         "0x1b851e1031ef35a238e6c67d0c7991162390df915f70eaf9098dbf0b175a6198": {
@@ -16050,7 +16225,7 @@
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2020-01-30T22:08:54.826Z",
+  "updatedAt": "2020-01-30T22:24:50.914Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

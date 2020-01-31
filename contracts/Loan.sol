@@ -3,16 +3,41 @@ pragma solidity >=0.5.0 <0.6.0;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./Stoppable.sol";
 
+   /*
+   Inheritance map:
+   Loan -> Stoppable -> Ownable
+   ownership and circuit-breaker contracts
+   segregated from main code
+   */
+
 contract Loan is Stoppable {
 
+   /*
+   The Loan contract is responsible for allowing
+   people to create peer-to-peer lending agreements.
+   */
+
+   /*
+   Safe guarding my contract from integer
+   overflow and underflow vulnerabilities.
+   */
    using SafeMath for uint256;
 
+   /*
+   User-defined type to represent the state
+   of a loan at a particular stage in the life-cycle
+   of the loan.
+   */
     enum Status {
         PENDING,
         ACTIVE,
         RESOLVED
     }
 
+    /* New type in the form of a struct to define
+    the characteristics of a loan. Limiting customisability
+    minimises potential vulnerabilities.
+    */
     struct Loans {
         uint fullAmount;
         uint amount;
@@ -24,8 +49,18 @@ contract Loan is Stoppable {
         uint requiredDeposit;
     }
 
+    /*
+    Instantiated in the constructor and incremented
+    after each loan creation to prevent a loan
+    having a ID collision.
+    */
     uint public loanId;
 
+    /*
+    Allows the view side to monitor &
+    react to certain functions
+    that get fired as well as log argument passed.
+    */
     event LogLoanCreation(address indexed _lender, uint indexed _loanId);
     event LogDeposit(address indexed _borrower, uint indexed _depositAmount);
     event LogRetrieved(uint indexed _loanID, address indexed _borrower, uint indexed _amountRetrieved);
@@ -34,15 +69,33 @@ contract Loan is Stoppable {
 
     mapping(uint256 => Loans) public loans;
 
+    /*
+    Checks if the deposit of the loan, with
+    the specified loan ID, has been paid.
+    */
     modifier paidDeposit(uint _loanId) {
          require(loans[_loanId].status == Status.ACTIVE, "This loan is not active");
         _;
     }
 
+    /*
+    Constructor, which is a function
+    that executes once (on deployment)
+    sets loanId to 1 which will be the ID
+    of the first loan created.
+    */
     constructor() public {
         loanId = 1;
     }
 
+    /*
+    This function takes 3 arguments
+    in which the Lender (msg.sender)
+    defines the Loan parameters. Allowing
+    the creation of a loan. This function
+    is available as long as it hasn't been killed
+    or stopped (see stoppable & ownable).
+    */
     function createLoan(uint _interest, address _borrower, uint _depositPercentage)
     external
     payable
@@ -73,6 +126,14 @@ contract Loan is Stoppable {
         return true;
     }
 
+    /*
+    This function allows the borrower to pay
+    the required deposit specified by the Lender.
+    The borrower specified by the lender must equal
+    the address of the person trying to pay the deposit.
+    As long as it hasn't been killed or stopped
+    (see stoppable & ownable).
+    */
     function payLoanDeposit(uint _loanId)
     external
     payable
@@ -88,6 +149,13 @@ contract Loan is Stoppable {
         emit LogDeposit(msg.sender, msg.value);
     }
 
+    /*
+    This function allows the borrower to reimburse
+    the lender the full amount of the loan, given the
+    borrower's address matches the address specified
+    by the Lender. As long as it hasn't been killed or stopped
+    (see stoppable & ownable).
+    */
     function payBackLoan(uint _loanId)
     public
     payable
@@ -105,6 +173,14 @@ contract Loan is Stoppable {
         emit LogPaid(msg.sender, _loanId, msg.value);
     }
 
+    /*
+    This function allows the borrower to retrieve
+    the funds from the loan, at a given ID, assuming
+    the address calling the function is equal to the
+    borrowers address specified by the Lender.
+    As long as it hasn't been killed or stopped
+    (see stoppable & ownable).
+    */
     function retrieveLoanFunds(uint _loanId)
     public
     payable
@@ -121,6 +197,12 @@ contract Loan is Stoppable {
         emit LogRetrieved(_loanId, msg.sender, loanAmount);
     }
 
+    /*
+    A read only function that retrieves the
+    loan at a given ID, returning all the parameters
+    of that loan. As long as it hasn't been killed or stopped
+    (see stoppable & ownable).
+    */
     function retrieveLoans(uint _loanId)
     public
     view
@@ -146,6 +228,12 @@ contract Loan is Stoppable {
         return (fullAmount, amount, interest, lender, borrower, status, requiredDeposit);
     }
 
+    /*
+    This function allows the owner to withdraw
+    all remaining funds from the contract in the unlikely
+    event that the contract must be killed. This will only
+    execute if the kill function has been called.
+    */
     function withdrawWhenKilled()
     public
     whenKilled
