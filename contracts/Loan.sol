@@ -184,6 +184,8 @@ contract Loan is Stoppable {
     function retrieveLoanFunds(uint _loanId)
     public
     payable
+    whenRunning
+    whenAlive
     paidDeposit(_loanId)
     {
         require(msg.sender == loans[_loanId].borrower, "Requires the borrower of that loan");
